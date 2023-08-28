@@ -29,4 +29,11 @@ export const UserRegisterInputSchema = object({
 export interface IUserVerify{
   verification_code: number;
 }
+
+export interface IUserLogin{
+  email?: string;
+  username?: string;
+  password: string;
+}
+
 export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>
