@@ -1,4 +1,8 @@
 import config from "../config/environment";
+import {
+  createUser,
+  createUserBody,
+} from "./user.docs";
 
 //options object for swaggerjs
 export const options = {
@@ -11,6 +15,10 @@ export const options = {
     },
     paths: {
     //   routes for the swagger docs goes here
+    // for buyers
+    "/user/register": {
+      post: createUser,
+    },
     },
     components: {
       securitySchemes: {
@@ -21,7 +29,7 @@ export const options = {
         },
       },
       schemas: {
-        // createUserBody,
+        createUserBody,
       },
     },
     servers: [
@@ -32,16 +40,7 @@ export const options = {
     ],
     tags: [
       {
-        name: "Buyers",
-      },
-      {
-        name: "Vendors",
-      },
-      {
-        name: "Categories",
-      },
-      {
-        name: "Products",
+        name: "Users",
       },
     ],
   },
