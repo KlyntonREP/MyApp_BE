@@ -25,5 +25,8 @@ export const UserRegisterInputSchema = object({
       }).min(6, 'Confirm Password too short - should be 6 chars minimum'),
     }),
   });
-
-  export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>
+  
+export interface IUserVerify{
+  verification_code: number;
+}
+export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>

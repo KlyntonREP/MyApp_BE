@@ -1,8 +1,6 @@
 import { UserModel } from "../models/index"
-import { IUserRegisterInput } from "../dto"
-import { Request} from 'express';
+import { IUserRegisterInput, IUserVerify } from "../dto"
 import log from '../utility/logger';
-import { HttpException } from "../middlewares";
 import { GenCode, sendMail} from "../utility/helpers";
 
 export const createUserService = async(req: IUserRegisterInput["body"]) => {
@@ -46,4 +44,26 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
         console.log(error);
         log.error(error);
     }
+}
+
+export const verifyUserService = async (req: IUserVerify) => {
+    try{
+        const { verification_code } = req
+        const verifyUser = await UserModel.findOne({ confirmationCode: verification_code});
+        console.log(verification_code)
+        if(!verifyUser){
+            return{
+                status:400,
+                message:"Invalid Code", 
+            };
+        }
+        verifyUser.status = "Active";
+        verifyUser.confirmationCode = '';
+        await verifyUser.save();
+        return {status: 200, message: "Verification successful!!!"}
+
+    }catch(error) {
+        console.log(error);
+        log.error(error);
+    };
 }

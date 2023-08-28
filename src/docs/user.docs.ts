@@ -85,6 +85,83 @@ const createUser = {
     },
   };
 
+const verifyUser = {
+  tags: ["Users"],
+  description: "Verify a user",
+  operationId: "verifyUser",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            verification_code: {
+              description: "Verification code that was sent to the user's email",
+              type: "number",
+              example: 982345,
+            },
+          },
+        },
+      },
+    },
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "Veification Successful",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              msg: {
+                type: "string",
+                example: "Verification Successful!!!",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "400": {
+    description: "Invalid verification code",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            msg: {
+              type: "string",
+              example: "Invalid Verification Code",
+            },
+          },
+        },
+      },
+    },
+  },
+  "500": {
+    description: "Internal Server Error",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            msg: {
+              type: "string",
+              example: "Something went wrong! Please try again",
+            },
+          },
+        },
+      },
+    },
+  },
+}
 const createUserBody = {
     type: "object",
     properties: {
@@ -124,4 +201,5 @@ const createUserBody = {
   export {
     createUser,
     createUserBody,
+    verifyUser,
   };

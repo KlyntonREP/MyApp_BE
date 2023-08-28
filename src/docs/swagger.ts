@@ -2,6 +2,7 @@ import config from "../config/environment";
 import {
   createUser,
   createUserBody,
+  verifyUser,
 } from "./user.docs";
 
 //options object for swaggerjs
@@ -9,16 +10,19 @@ export const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Nene",
+      title: "My App",
       version: "1.0.0",
       description: "An api for NeNe",
     },
     paths: {
     //   routes for the swagger docs goes here
-    // for buyers
-    "/user/register": {
-      post: createUser,
-    },
+    // for user
+      "/user/register": {
+        post: createUser,
+      },
+      "/user/verify": {
+        post: verifyUser,
+      }
     },
     components: {
       securitySchemes: {
