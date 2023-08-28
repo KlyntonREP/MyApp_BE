@@ -1,5 +1,5 @@
 import { UserModel } from "../models/index"
-import { IUserRegisterInput, IUserVerify } from "../dto"
+import { IUserRegisterInput, IUserVerify, IUserLogin } from "../dto"
 import log from '../utility/logger';
 import { GenCode, sendMail} from "../utility/helpers";
 
@@ -67,3 +67,11 @@ export const verifyUserService = async (req: IUserVerify) => {
         log.error(error);
     };
 }
+
+export const UserLoginService = async ( req: IUserLogin ) => {
+    try{
+
+    }catch(error) {
+        console.log(error);
+    };
+};

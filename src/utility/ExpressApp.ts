@@ -17,7 +17,9 @@ export default async (app: Application) => {
   //set cross origin resource sharing
   app.use(cors(
     {
-      
+      origin: "*",
+      methods: ["GET", "POST", "DELETE", "UPDATE", "PUT"],
+      credentials: true,
     }
   ));
 
