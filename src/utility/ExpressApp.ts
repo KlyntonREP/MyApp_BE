@@ -10,24 +10,13 @@ import { options } from "../docs/swagger";
 import userRoutes from "../routes/user.route"
 
 export default async (app: Application) => {
-  app.use(function(req, res, next) {
-    // res.header("Access-Control-Allow-Origin", "*");
-    const allowedOrigins = ['http://localhost:3000', 'http://my-app-be.onrender.com', 'https://my-app-be.onrender.com'];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes("origin")) {
-         res.setHeader('Access-Control-Allow-Origin', "origin");
-    }
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-credentials", "true");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, UPDATE");
-    next();
-  });
-   //set cross origin resource sharing
-   app.use(cors());
-
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   
+
+  //set cross origin resource sharing
+  app.use(cors());
+
   // Sanitize data
   app.use(mongoSanitize());
 
