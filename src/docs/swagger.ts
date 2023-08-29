@@ -12,7 +12,7 @@ export const options = {
     info: {
       title: "My App",
       version: "1.0.0",
-      description: "An api for NeNe",
+      description: "An api documentation for My_App",
     },
     paths: {
     //   routes for the swagger docs goes here
