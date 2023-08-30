@@ -25,7 +25,9 @@ interface UserDoc extends Document {
     },
     userName: { 
       type: String,
-      required: true
+      required: true,
+      lowercase: true,
+      trim: true,
     },
     email: {
         required: true,
@@ -44,13 +46,9 @@ interface UserDoc extends Document {
       required: true
     },
     password: {
-        type: String,
-        required: true,
-        minlength: 6,
-        maxlength: 255,
-        trim: true,
-        match: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]+$/,
-        elect: false,
+      type: String,
+      required: [true, "Please enter your password"],
+      minLenght: [6, "Password must be at least 6 characters"],
     },
     image: {
         type: String,

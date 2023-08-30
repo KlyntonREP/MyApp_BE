@@ -2,6 +2,8 @@ import { UserModel } from "../models/index"
 import { IUserRegisterInput, IUserVerify, IUserLogin } from "../dto"
 import log from '../utility/logger';
 import { GenCode, sendMail} from "../utility/helpers";
+import bcrypt from 'bcryptjs';
+import { signToken } from '../utility/jwtUtility';
 
 export const createUserService = async(req: IUserRegisterInput["body"]) => {
     try{
@@ -38,19 +40,18 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
 
         await sendMail(name, user?.email, subject, message);
         
-        return {status: 200, message: "Success", data: user}
+        return {status: 200, message: "Email Sent Successfully", data: user}
 
     }catch(error) {
-        console.log(error);
         log.error(error);
+        return{status: 500, message:"Error Creating User"}
     }
 }
 
 export const verifyUserService = async (req: IUserVerify) => {
     try{
         const { verification_code } = req
-        const verifyUser = await UserModel.findOne({ confirmationCode: verification_code});
-        console.log(verification_code)
+        const verifyUser: any = await UserModel.findOne({ confirmationCode: verification_code});
         if(!verifyUser){
             return{
                 status:400,
@@ -60,18 +61,45 @@ export const verifyUserService = async (req: IUserVerify) => {
         verifyUser.status = "Active";
         verifyUser.confirmationCode = '';
         await verifyUser.save();
-        return {status: 200, message: "Verification successful!!!"}
+        return {status: 200, message: "Verification successful!!!✅"}
 
     }catch(error) {
-        console.log(error);
         log.error(error);
+        return{status: 500, message:"Error Validating User 😭🥲💔"}
     };
 }
 
 export const UserLoginService = async ( req: IUserLogin ) => {
     try{
-
+        const { username, email, password } = req
+        const userEmail: any = await UserModel.findOne({ email: email });
+        const userByUsername: any = await UserModel.findOne({ userName: username });
+        if(!userEmail && !userByUsername){
+            return{
+                status:404,
+                message:"User Not Found", 
+            };
+        }
+        const verifyPass = await bcrypt.compare(password, userEmail?.password || userByUsername?.password);
+        if(!verifyPass){
+            return{
+                status:401,
+                message:"Invalid Credentials", 
+            };
+        }
+        if(userEmail?.status != "Active" && userByUsername?.status != "Active"){
+            return{
+                status:400,
+                message:"Your account is not active, Please activate your account", 
+            };
+        }
+        return{status: 200, message:"Login Successful", data:{
+            _id: userEmail?.id || userByUsername?.id,
+            username: userEmail?.userName || userByUsername?.userName,
+            token: await signToken({ user: userEmail?.id || userByUsername?.id, username: userEmail?.userName || userByUsername?.userName})
+        }}
     }catch(error) {
         console.log(error);
+        return{status: 500, message:"Error Loging User In 😔"}
     };
 };
