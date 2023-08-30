@@ -3,6 +3,7 @@ import {
   createUser,
   createUserBody,
   verifyUser,
+  resendCode,
   userLogin
 } from "./user.docs";
 
@@ -23,6 +24,9 @@ export const options = {
       },
       "/user/verify": {
         post: verifyUser,
+      },
+      "/user/resend-code": {
+        post: resendCode,
       },
       "/user/login": {
         post: userLogin,

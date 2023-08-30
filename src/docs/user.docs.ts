@@ -179,6 +179,99 @@ const verifyUser = {
   },
 }
 
+const resendCode = {
+  tags: ["Users"],
+  description: "Resending Verification Code",
+  operationId: "verifyUserMail",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            email: {
+              description: "Email of the user",
+              type: "string",
+              example: "johndoe@gmail.com",
+            },
+          },
+        },
+      },
+    },
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "Veification code sent",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              msg: {
+                type: "string",
+                example: "Verification code sent, kindly check your mail",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Email not sent",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              msg: {
+                type: "string",
+                example: "Error Occured While Sending Mail",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User does not exist",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              msg: {
+                type: "string",
+                example: "User does not exist",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              msg: {
+                type: "string",
+                example: "Something went wrong! Please try again",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 const userLogin = {
   tags: ["Users"],
@@ -345,5 +438,6 @@ const createUserBody = {
     createUser,
     createUserBody,
     verifyUser,
+    resendCode,
     userLogin
   };

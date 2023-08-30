@@ -36,4 +36,8 @@ export interface IUserLogin{
   password: string;
 }
 
+export interface IUserResendcode{
+  email: string;
+}
+
 export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>

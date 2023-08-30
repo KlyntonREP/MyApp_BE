@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {  createUserService, verifyUserService , UserLoginService} from "../services/index";
+import {  createUserService, verifyUserService , UserLoginService, resendCodeService} from "../services/index";
 
 
 /**
@@ -15,6 +15,22 @@ export const createUserController = async(req: Request, res: Response) => {
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
+    }
+}
+
+/**
+ * @description resend verification code
+ * @method POST
+ * @route /api/user/resend-code
+ * @access public
+ */
+export const resendCodeController  = async (req: Request, res: Response) => {
+    try{
+        const response: any = await resendCodeService(req.body);
+        return res.status(response.status).json(response.data || response.message) ;
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message}); 
     }
 }
 
