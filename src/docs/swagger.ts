@@ -3,6 +3,7 @@ import {
   createUser,
   createUserBody,
   verifyUser,
+  userLogin
 } from "./user.docs";
 
 //options object for swaggerjs
@@ -22,6 +23,9 @@ export const options = {
       },
       "/user/verify": {
         post: verifyUser,
+      },
+      "/user/login": {
+        post: userLogin,
       }
     },
     components: {
