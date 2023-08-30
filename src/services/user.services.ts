@@ -1,5 +1,5 @@
 import { UserModel } from "../models/index"
-import { IUserRegisterInput, IUserVerify, IUserLogin } from "../dto"
+import { IUserRegisterInput, IUserVerify, IUserLogin, IUserResendcode} from "../dto"
 import log from '../utility/logger';
 import { GenCode, sendMail} from "../utility/helpers";
 import bcrypt from 'bcryptjs';
@@ -45,6 +45,34 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
     }catch(error) {
         log.error(error);
         return{status: 500, message:"Error Creating User"}
+    }
+}
+
+export const resendCodeService = async (req: IUserResendcode) => {
+    try{
+        const { email } = req;
+        const user = await UserModel.findOne({email: email})
+        if(!user){
+            return{
+                status:404,
+                message:"user not found",
+            };
+        }
+        const name = `${user.firstName} ${user.lastName}`;
+        const message = `<h1>Email Confirmation</h1>
+        <h2>Hello ${name}</h2>
+        <p>Kindly verify your email address to complete the signup and login to your account</br> by inputing the code below.</p>
+        <p>Verification Code: ${user?.confirmationCode}</p>`;
+        const subject = "Please confirm your account";
+
+        await sendMail(name, user?.email, subject, message);
+        if(sendMail != null){
+            return {status: 200, message: "Email Sent Successfully"}
+        }
+        return {status: 400, message:"Error Sending Email"}
+    }catch(error){
+        console.log(error);
+        return{status: 500, message:"Error Resending Code 😔"}
     }
 }
 
