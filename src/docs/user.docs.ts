@@ -398,46 +398,269 @@ const userLogin = {
   },
 };
 
-const createUserBody = {
-    type: "object",
-    properties: {
-      firstName: {
-        type: "string",
-        example: "John",
-      },
-      lastName: {
-        type: "string",
-        example: "Snow",
-      },
-      userName: {
-        type: "string",
-        example: "Snow",
-      },
-      email: {
-        type: "string",
-        example: "johnsnow@email.com",
-      },
-      phone: {
-        type: "string",
-        example: "+1234567890",
-      },
-      password: {
-        type: "string",
-        description: "unencrypted user's password",
-        example: "!1234aWe1Ro3$#",
-      },
-      confirmPassword: {
-        type: "string",
-        description: "unencrypted user's password",
-        example: "!1234aWe1Ro3$#",
+const forgotPass = {
+  tags: ["Users"],
+  description: "Send password reset link to a vendor's email",
+  operationId: "forgotPassword",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            email: {
+              description: "Email of the user",
+              type: "string",
+              example: "johndoe@gmail.com",
+            },
+          },
+        },
       },
     },
-  };
-  
-  export {
-    createUser,
-    createUserBody,
-    verifyUser,
-    resendCode,
-    userLogin
-  };
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "Reset Password code sent",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example:
+                  "Rest Password code Sent successfully! Please check your mail",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User does not exist",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "No User With This Email",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Error Sending Email",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Oops! Something went wrong. Could not send email. Please try again",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Internal server error",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const resetPass = {
+  tags: ["Users"],
+  description:
+    "Reset User Password By Using The Code Sent From Forgot Password Endpoint",
+  operationId: "resetpassword",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  // parameters: [
+  //   {
+  //     name: "Id",
+  //     in: "path",
+  //     description: "This Id Is The Vendors's ID",
+  //     required: true,
+  //     schema: {
+  //       type: "string",
+  //     },
+  //   },
+  //   {
+  //     name: "Token",
+  //     in: "path",
+  //     description: "This Is The Token Sent To The Vendors's Email",
+  //     required: true,
+  //     schema: {
+  //       type: "string",
+  //     },
+  //   },
+  // ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            code: {
+              description: "Reset Password Code",
+              type: "string",
+              example: "123456",
+            },
+            password: {
+              description: "new unencrypted vendor password",
+              type: "string",
+              example: "!1234aWe1Ro3$#",
+            },
+            confirmPassword: {
+              description: "confirm unencrypted vendor password",
+              type: "string",
+              example: "!1234aWe1Ro3$#",
+            },
+          },
+        },
+      },
+    },
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "Password Reset Successful",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Password Reset Successfully!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Invalid code",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid Code",
+              },
+            },
+          },
+        },
+      },
+    },
+    "401": {
+      description: "Passwords Do Not Match",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Passwords Do Not Match!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const createUserBody = {
+  type: "object",
+  properties: {
+    firstName: {
+      type: "string",
+      example: "John",
+    },
+    lastName: {
+      type: "string",
+      example: "Snow",
+    },
+    userName: {
+      type: "string",
+      example: "Snow",
+    },
+    email: {
+      type: "string",
+      example: "johnsnow@email.com",
+    },
+    phone: {
+      type: "string",
+      example: "+1234567890",
+    },
+    password: {
+      type: "string",
+      description: "unencrypted user's password",
+      example: "!1234aWe1Ro3$#",
+    },
+    confirmPassword: {
+      type: "string",
+      description: "unencrypted user's password",
+      example: "!1234aWe1Ro3$#",
+    },
+  },
+};
+
+
+export {
+  createUser,
+  createUserBody,
+  verifyUser,
+  resendCode,
+  userLogin,
+  forgotPass,
+  resetPass
+};

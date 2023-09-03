@@ -1,5 +1,11 @@
 import { UserModel } from "../models/index"
-import { IUserRegisterInput, IUserVerify, IUserLogin, IUserResendcode} from "../dto"
+import { IUserRegisterInput, 
+    IUserVerify, 
+    IUserLogin, 
+    IUserResendcode, 
+    IUserForgotPass,
+    IUserResetPass
+} from "../dto"
 import log from '../utility/logger';
 import { GenCode, sendMail} from "../utility/helpers";
 import bcrypt from 'bcryptjs';
@@ -44,7 +50,7 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
 
     }catch(error) {
         log.error(error);
-        return{status: 500, message:"Error Creating User"}
+        return{status: 500, message:"Internal Server Error"}
     }
 }
 
@@ -93,7 +99,7 @@ export const verifyUserService = async (req: IUserVerify) => {
 
     }catch(error) {
         log.error(error);
-        return{status: 500, message:"Error Validating User 😭🥲💔"}
+        return{status: 500, message:"Internal Server Error"}
     };
 }
 
@@ -128,6 +134,74 @@ export const UserLoginService = async ( req: IUserLogin ) => {
         }}
     }catch(error) {
         console.log(error);
-        return{status: 500, message:"Error Loging User In 😔"}
+        return{status: 500, message:"Internal Server Error"}
     };
 };
+
+export const forgotPassService = async(res: IUserForgotPass) => {
+    try{
+        const { email, phone } = res;
+        const userByEmail: any = await UserModel.findOne({ email: email });
+        const userByPhone: any = await UserModel.findOne({ phoneNumber: phone });
+        
+        if(!userByEmail &&!userByPhone){
+            return{
+                status:404,
+                message:"User Not Found", 
+            };
+        }
+        if(userByEmail == null){
+            userByPhone.confirmationCode = await GenCode();
+            await userByPhone.save();
+        }
+        userByEmail.confirmationCode = await GenCode()
+        await userByEmail.save();
+        
+
+        const name = `${userByEmail?.firstName || userByPhone?.firstName} ${userByEmail?.lastName || userByPhone?.lastName}`;
+        const message = `<h1>Forgot Password</h1>
+        <h2>Hello ${userByEmail?.firstName || userByPhone?.firstName} ${userByEmail?.lastName || userByPhone?.lastName}</h2>
+        <p>A reset password action wan initiated using your email. If the action was your doing please input the code below.</p>
+        <p>Verification Code: ${userByEmail?.confirmationCode || userByPhone?.confirmationCode}</p>`;
+        const subject = "Please confirm your account";
+
+        await sendMail(name, userByEmail?.email|| userByPhone?.email, subject, message);
+        if(sendMail != null){
+            return {status: 200, message: "Email Sent Successfully"}
+        }
+        return {status: 400, message:"Error Sending Email"}
+
+    }catch(error){
+        console.log(error);
+        return{status: 500, message: "Internal Server Error"}
+    }
+}
+
+export const resetPassService = async(req: IUserResetPass) => {
+    try{
+        const { code, password, confirmPassword} = req;
+        const user: any = await UserModel.findOne({ confirmationCode: code});
+        if(!user){
+            return{
+                status:400,
+                message:"Invalid Code, Please Input The Correct Code.", 
+            };
+        }
+        if (confirmPassword !== password) {
+            return {
+                status: 401,
+                message: "Passwords do not match"
+            }
+        }
+
+        const newpassword = await bcrypt.hash(password, 10);
+        user.password = newpassword;
+        await user.save();
+
+        return {status: 200, message: "Password Reset Successfully"}
+
+    }catch(error){
+        console.log(error);
+        return{status: 500, message: "Internal Server Error"}   
+    }
+}
