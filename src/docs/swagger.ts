@@ -4,7 +4,9 @@ import {
   createUserBody,
   verifyUser,
   resendCode,
-  userLogin
+  userLogin,
+  forgotPass,
+  resetPass
 } from "./user.docs";
 
 //options object for swaggerjs
@@ -30,6 +32,12 @@ export const options = {
       },
       "/user/login": {
         post: userLogin,
+      },
+      "/user/forgot-password": {
+        post: forgotPass,
+      },
+      "/user/reset-password": {
+        post: resetPass,
       }
     },
     components: {
