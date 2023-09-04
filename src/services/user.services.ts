@@ -17,8 +17,7 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
         const userExist = await UserModel.findOne({ email: email });
         if(userExist) return{
             status:409,
-            message:"Error",
-            data: 'User already exists' 
+            message:"User already exists",
         };
         if(password != confirmPassword){
             return{
@@ -46,7 +45,9 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
 
         await sendMail(name, user?.email, subject, message);
         
-        return {status: 200, message: "Email Sent Successfully", data: user}
+        const response =  {status: 200, message: "Email Sent Successfully", data: user}
+
+        return response
 
     }catch(error) {
         log.error(error);
@@ -73,7 +74,7 @@ export const resendCodeService = async (req: IUserResendcode) => {
 
         await sendMail(name, user?.email, subject, message);
         if(sendMail != null){
-            return {status: 200, message: "Email Sent Successfully"}
+            return {status: 200, message: "Verification Code Resent Successfully"}
         }
         return {status: 400, message:"Error Sending Email"}
     }catch(error){
@@ -86,16 +87,16 @@ export const verifyUserService = async (req: IUserVerify) => {
     try{
         const { verification_code } = req
         const verifyUser: any = await UserModel.findOne({ confirmationCode: verification_code});
-        if(!verifyUser){
+        if(!verifyUser || verifyUser === null){
             return{
                 status:400,
                 message:"Invalid Code", 
             };
         }
         verifyUser.status = "Active";
-        verifyUser.confirmationCode = '';
-        await verifyUser.save();
-        return {status: 200, message: "Verification successful!!!✅"}
+        verifyUser.confirmationCode = " ";
+        const newVerify = await verifyUser.save();
+        return {status: 200, message: "Verification successful!!!✅", data: newVerify}
 
     }catch(error) {
         log.error(error);
@@ -167,7 +168,7 @@ export const forgotPassService = async(res: IUserForgotPass) => {
 
         await sendMail(name, userByEmail?.email|| userByPhone?.email, subject, message);
         if(sendMail != null){
-            return {status: 200, message: "Email Sent Successfully"}
+            return {status: 200, message: "Reset Password Code Sent Successfully"}
         }
         return {status: 400, message:"Error Sending Email"}
 
@@ -196,9 +197,10 @@ export const resetPassService = async(req: IUserResetPass) => {
 
         const newpassword = await bcrypt.hash(password, 10);
         user.password = newpassword;
-        await user.save();
+        user.confirmationCode = " ";
+        const newUser = await user.save();
 
-        return {status: 200, message: "Password Reset Successfully"}
+        return {status: 200, message: "Password Reset Successfully", data: newUser}
 
     }catch(error){
         console.log(error);

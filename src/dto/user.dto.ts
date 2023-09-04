@@ -27,7 +27,7 @@ export const UserRegisterInputSchema = object({
   });
   
 export interface IUserVerify{
-  verification_code: number;
+  verification_code: string;
 }
 
 export interface IUserLogin{
