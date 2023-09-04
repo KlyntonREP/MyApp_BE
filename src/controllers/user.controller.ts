@@ -17,7 +17,11 @@ import {  createUserService,
 export const createUserController = async(req: Request, res: Response) => {
     try{
         const response: any = await createUserService(req.body);
-        return res.status(response.status).json(response.data);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -33,7 +37,11 @@ export const createUserController = async(req: Request, res: Response) => {
 export const resendCodeController  = async (req: Request, res: Response) => {
     try{
         const response: any = await resendCodeService(req.body);
-        return res.status(response.status).json(response.data || response.message) ;
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message}); 
@@ -49,7 +57,11 @@ export const resendCodeController  = async (req: Request, res: Response) => {
 export const verifyUserController = async(req: Request, res: Response) => {
     try{
         const response: any = await verifyUserService(req.body);
-        return res.status(response.status).json(response.message);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -65,7 +77,11 @@ export const verifyUserController = async(req: Request, res: Response) => {
 export const UserLoginController = async(req: Request, res: Response) => {
     try{
         const response: any = await UserLoginService(req.body);
-        return res.status(response.status).json(response.data || response.message);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -81,7 +97,11 @@ export const UserLoginController = async(req: Request, res: Response) => {
 export const forgotPassController =  async(req: Request, res: Response) => {
     try{
         const response: any = await forgotPassService(req.body);
-        return res.status(response.status).json(response.message);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -97,7 +117,11 @@ export const forgotPassController =  async(req: Request, res: Response) => {
 export const resetPassController =  async(req: Request, res: Response) => {
     try{
         const response: any = await resetPassService(req.body);
-        return res.status(response.status).json(response.message);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});

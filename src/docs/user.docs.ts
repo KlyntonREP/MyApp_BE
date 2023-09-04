@@ -2,11 +2,11 @@ const createUser = {
     tags: ["Users"],
     description: "Create a new user",
     operationId: "createUser",
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
+    // security: [
+    //   {
+    //     bearerAuth: [],
+    //   },
+    // ],
     requestBody: {
       content: {
         "application/json": {
@@ -89,11 +89,11 @@ const verifyUser = {
   tags: ["Users"],
   description: "Verify a user",
   operationId: "verifyUser",
-  security: [
-    {
-      bearerAuth: [],
-    },
-  ],
+  // security: [
+  //   {
+  //     bearerAuth: [],
+  //   },
+  // ],
   requestBody: {
     content: {
       "application/json": {
@@ -183,11 +183,11 @@ const resendCode = {
   tags: ["Users"],
   description: "Resending Verification Code",
   operationId: "verifyUserMail",
-  security: [
-    {
-      bearerAuth: [],
-    },
-  ],
+  // security: [
+  //   {
+  //     bearerAuth: [],
+  //   },
+  // ],
   requestBody: {
     content: {
       "application/json": {
@@ -277,11 +277,11 @@ const userLogin = {
   tags: ["Users"],
   description: "Login a vendor using email or username and password",
   operationId: "loginVendor",
-  security: [
-    {
-      bearerAuth: [],
-    },
-  ],
+  // security: [
+  //   {
+  //     bearerAuth: [],
+  //   },
+  // ],
   requestBody: {
     content: {
       "application/json": {
@@ -402,11 +402,11 @@ const forgotPass = {
   tags: ["Users"],
   description: "Send password reset link to a vendor's email",
   operationId: "forgotPassword",
-  security: [
-    {
-      bearerAuth: [],
-    },
-  ],
+  // security: [
+  //   {
+  //     bearerAuth: [],
+  //   },
+  // ],
   requestBody: {
     content: {
       "application/json": {
