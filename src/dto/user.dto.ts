@@ -40,15 +40,18 @@ export interface IUserResendcode{
   email: string;
 }
 
-export interface IUserForgotPass{
-  email?: string;
-  phone?: number
+export interface IUserForgotPassEmail{
+  email: string;
 }
 
 export interface IUserResetPass{
   code: number;
   password: string;
   confirmPassword: string;
+}
+
+export interface IUserForgotPassPhone {
+  phoneNumber: string;
 }
 
 export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>

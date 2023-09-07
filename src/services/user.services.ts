@@ -3,13 +3,18 @@ import { IUserRegisterInput,
     IUserVerify, 
     IUserLogin, 
     IUserResendcode, 
-    IUserForgotPass,
-    IUserResetPass
+    IUserForgotPassEmail,
+    IUserResetPass,
+    IUserForgotPassPhone,
 } from "../dto"
 import log from '../utility/logger';
 import { GenCode, sendMail} from "../utility/helpers";
 import bcrypt from 'bcryptjs';
 import { signToken } from '../utility/jwtUtility';
+import twilio from 'twilio';
+import config from "../config/environmentVariables";
+
+
 
 export const createUserService = async(req: IUserRegisterInput["body"]) => {
     try{
@@ -139,34 +144,29 @@ export const UserLoginService = async ( req: IUserLogin ) => {
     };
 };
 
-export const forgotPassService = async(res: IUserForgotPass) => {
+export const forgotPassEmailService = async(res: IUserForgotPassEmail) => {
     try{
-        const { email, phone } = res;
+        const { email } = res;
         const userByEmail: any = await UserModel.findOne({ email: email });
-        const userByPhone: any = await UserModel.findOne({ phoneNumber: phone });
         
-        if(!userByEmail &&!userByPhone){
+        if(!userByEmail){
             return{
                 status:404,
                 message:"User Not Found", 
             };
         }
-        if(userByEmail == null){
-            userByPhone.confirmationCode = await GenCode();
-            await userByPhone.save();
-        }
         userByEmail.confirmationCode = await GenCode()
         await userByEmail.save();
         
 
-        const name = `${userByEmail?.firstName || userByPhone?.firstName} ${userByEmail?.lastName || userByPhone?.lastName}`;
+        const name = `${userByEmail?.firstName} ${userByEmail?.lastName}`;
         const message = `<h1>Forgot Password</h1>
-        <h2>Hello ${userByEmail?.firstName || userByPhone?.firstName} ${userByEmail?.lastName || userByPhone?.lastName}</h2>
+        <h2>Hello ${userByEmail?.firstName} ${userByEmail?.lastName }</h2>
         <p>A reset password action wan initiated using your email. If the action was your doing please input the code below.</p>
-        <p>Verification Code: ${userByEmail?.confirmationCode || userByPhone?.confirmationCode}</p>`;
+        <p>Verification Code: ${userByEmail?.confirmationCode }</p>`;
         const subject = "Please confirm your account";
 
-        await sendMail(name, userByEmail?.email|| userByPhone?.email, subject, message);
+        await sendMail(name, userByEmail?.email, subject, message);
         if(sendMail != null){
             return {status: 200, message: "Reset Password Code Sent Successfully"}
         }
@@ -174,6 +174,35 @@ export const forgotPassService = async(res: IUserForgotPass) => {
 
     }catch(error){
         console.log(error);
+        return{status: 500, message: "Internal Server Error"}
+    }
+}
+
+export const forgotPassPhoneService = async(req: IUserForgotPassPhone) => {
+    try{
+        const { phoneNumber } = req;
+        const accountSid = config.TWILO_ACCOUNT_SID;
+        const authToken = config.TWILO_AUTH_TOKEN;
+        const client = twilio(accountSid, authToken);
+        const user: any = await UserModel.findOne({ phoneNumber: phoneNumber})
+        console.log("user = =====",user);
+        if(!user || user === null){
+            return{
+                status:404,
+                message:"User Not Found"
+            }
+        }
+        user.confirmationCode = await GenCode()
+        await user.save();
+        const message = await client.messages.create({
+            body: `Hello ${user.firstName} ${user.lastName}, this is your reset password code ${user.confirmationCode}`,
+            from: config.SMS_NUMBER,
+            to: `${user.phoneNumber}`
+        })
+        console.log(message.sid)
+        return {status: 200, message: "Reset Password Code Sent Successfully"}
+    }catch(error){
+        console.log(error)
         return{status: 500, message: "Internal Server Error"}
     }
 }
@@ -207,3 +236,24 @@ export const resetPassService = async(req: IUserResetPass) => {
         return{status: 500, message: "Internal Server Error"}   
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

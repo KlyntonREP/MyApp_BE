@@ -1,5 +1,5 @@
 import otpGenerator from "otp-generator";
-import config from "../config/environment";
+import config from "../config/environmentVariables";
 import nodemailer from "nodemailer";
 import log from "./logger";
 
