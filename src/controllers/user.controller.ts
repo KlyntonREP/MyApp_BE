@@ -3,7 +3,8 @@ import {  createUserService,
     verifyUserService , 
     UserLoginService, 
     resendCodeService, 
-    forgotPassService,
+    forgotPassEmailService,
+    forgotPassPhoneService,
     resetPassService
 } from "../services/index";
 
@@ -89,14 +90,34 @@ export const UserLoginController = async(req: Request, res: Response) => {
 }
 
 /**
- * @description Forgot Password
+ * @description Forgot Password By email
  * @method POST
- * @route /api/user/forgot-password
+ * @route /api/user/forgot-password-email
  * @access public
  */
-export const forgotPassController =  async(req: Request, res: Response) => {
+export const forgotPassEmailController =  async(req: Request, res: Response) => {
     try{
-        const response: any = await forgotPassService(req.body);
+        const response: any = await forgotPassEmailService(req.body);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+/**
+ * @description Forgot Password By phone
+ * @method POST
+ * @route /api/user/forgot-password-phone
+ * @access public
+ */
+export const forgotPassPhoneController =  async(req: Request, res: Response) => {
+    try{
+        const response: any = await forgotPassPhoneService(req.body);
         return res.status(response.status).json({
             status: response.status, 
             message: response.message, 

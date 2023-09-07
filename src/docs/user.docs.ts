@@ -398,10 +398,10 @@ const userLogin = {
   },
 };
 
-const forgotPass = {
+const forgotPassEmail = {
   tags: ["Users"],
-  description: "Send password reset link to a vendor's email",
-  operationId: "forgotPassword",
+  description: "Send password reset link to the user's email",
+  operationId: "forgotPasswordEmail",
   // security: [
   //   {
   //     bearerAuth: [],
@@ -468,6 +468,101 @@ const forgotPass = {
               message: {
                 type: "string",
                 example: "Oops! Something went wrong. Could not send email. Please try again",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Internal server error",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const forgotPassPhone = {
+  tags: ["Users"],
+  description: "Send password reset code to the users phone number",
+  operationId: "forgotPasswordPhone",
+  // security: [
+  //   {
+  //     bearerAuth: [],
+  //   },
+  // ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            phoneNumber: {
+              description: "Phone Number Of User",
+              type: "string",
+              example: "081******94",
+            },
+          },
+        },
+      },
+    },
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "Reset Password code sent",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example:
+                  "Rest Password code Sent successfully! Please check your messages",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User does not exist",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "No User With This Phone Number",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Error Sending Message",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Oops! Something went wrong. Could not send Message. Please try again",
               },
             },
           },
@@ -661,6 +756,7 @@ export {
   verifyUser,
   resendCode,
   userLogin,
-  forgotPass,
+  forgotPassEmail,
+  forgotPassPhone,
   resetPass
 };

@@ -9,4 +9,7 @@ export default {
     BASE_URL: process.env.BASE_URL,
     AUTH_EMAIL: process.env.AUTH_EMAIL,
     AUTH_PASS: process.env.AUTH_PASS,
+    TWILO_ACCOUNT_SID: process.env.TWILO_ACCOUNT_SID,
+    TWILO_AUTH_TOKEN: process.env.TWILO_AUTH_TOKEN,
+    SMS_NUMBER: process.env.SMS_NUMBER
 }

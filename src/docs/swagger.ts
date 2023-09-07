@@ -1,11 +1,12 @@
-import config from "../config/environment";
+import config from "../config/environmentVariables";
 import {
   createUser,
   createUserBody,
   verifyUser,
   resendCode,
   userLogin,
-  forgotPass,
+  forgotPassEmail,
+  forgotPassPhone,
   resetPass
 } from "./user.docs";
 
@@ -33,8 +34,11 @@ export const options = {
       "/user/login": {
         post: userLogin,
       },
-      "/user/forgot-password": {
-        post: forgotPass,
+      "/user/forgot-password-email": {
+        post: forgotPassEmail,
+      },
+      "/user/forgot-password-phone": {
+        post: forgotPassPhone,
       },
       "/user/reset-password": {
         post: resetPass,

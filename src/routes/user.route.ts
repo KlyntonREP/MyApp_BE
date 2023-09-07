@@ -4,7 +4,8 @@ import {
   verifyUserController,
   UserLoginController,
   resendCodeController,
-  forgotPassController,
+  forgotPassEmailController,
+  forgotPassPhoneController,
   resetPassController
 } from '../controllers/index';
 // import { Authenticate } from '../middlewares';
@@ -17,6 +18,7 @@ router.post('/register', validate(UserRegisterInputSchema), createUserController
 router.post('/resend-code', resendCodeController);
 router.post('/verify', verifyUserController);
 router.post('/login', UserLoginController);
-router.post('/forgot-password', forgotPassController);  
+router.post('/forgot-password-email', forgotPassEmailController);  
+router.post('/forgot-password-phone', forgotPassPhoneController);  
 router.post('/reset-password', resetPassController);
 export default router;
