@@ -99,7 +99,7 @@ export const verifyUserService = async (req: IUserVerify) => {
             };
         }
         verifyUser.status = "Active";
-        verifyUser.confirmationCode = " ";
+        verifyUser.confirmationCode = "";
         const newVerify = await verifyUser.save();
         return {status: 200, message: "Verification successful!!!✅", data: newVerify}
 
@@ -185,7 +185,6 @@ export const forgotPassPhoneService = async(req: IUserForgotPassPhone) => {
         const authToken = config.TWILO_AUTH_TOKEN;
         const client = twilio(accountSid, authToken);
         const user: any = await UserModel.findOne({ phoneNumber: phoneNumber})
-        console.log("user = =====",user);
         if(!user || user === null){
             return{
                 status:404,
