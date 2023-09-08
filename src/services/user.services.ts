@@ -64,17 +64,20 @@ export const resendCodeService = async (req: IUserResendcode) => {
     try{
         const { email } = req;
         const user = await UserModel.findOne({email: email})
+        console.log("user ======", user)
         if(!user){
             return{
                 status:404,
                 message:"user not found",
             };
         }
+        user.confirmationCode = await GenCode()
+        const newUser  = await user.save();
         const name = `${user.firstName} ${user.lastName}`;
         const message = `<h1>Email Confirmation</h1>
         <h2>Hello ${name}</h2>
         <p>Kindly verify your email address to complete the signup and login to your account</br> by inputing the code below.</p>
-        <p>Verification Code: ${user?.confirmationCode}</p>`;
+        <p>Verification Code: ${newUser.confirmationCode}</p>`;
         const subject = "Please confirm your account";
 
         await sendMail(name, user?.email, subject, message);
@@ -98,13 +101,20 @@ export const verifyUserService = async (req: IUserVerify) => {
                 message:"Invalid Code", 
             };
         }
+        if(verifyUser.status === "Active"){
+            return{
+                status: 401,
+                message: "This Account Is Already verified"
+            }
+        }
         verifyUser.status = "Active";
-        verifyUser.confirmationCode = "";
+        verifyUser.confirmationCode = ' ';
         const newVerify = await verifyUser.save();
+        
         return {status: 200, message: "Verification successful!!!✅", data: newVerify}
 
     }catch(error) {
-        log.error(error);
+        console.log(error);
         return{status: 500, message:"Internal Server Error"}
     };
 }
