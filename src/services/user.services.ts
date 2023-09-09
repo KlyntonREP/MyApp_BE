@@ -108,7 +108,7 @@ export const verifyUserService = async (req: IUserVerify) => {
             }
         }
         verifyUser.status = "Active";
-        verifyUser.confirmationCode = ' ';
+        verifyUser.confirmationCode = "";
         const newVerify = await verifyUser.save();
         
         return {status: 200, message: "Verification successful!!!✅", data: newVerify}
@@ -235,7 +235,7 @@ export const resetPassService = async(req: IUserResetPass) => {
 
         const newpassword = await bcrypt.hash(password, 10);
         user.password = newpassword;
-        user.confirmationCode = " ";
+        user.confirmationCode = "";
         const newUser = await user.save();
 
         return {status: 200, message: "Password Reset Successfully", data: newUser}
