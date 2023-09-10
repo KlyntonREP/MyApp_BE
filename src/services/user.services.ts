@@ -31,11 +31,12 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
                 data: 'Passwords do not match' 
             };
         }
+        const hashPassword = await bcrypt.hash(password, 12);
         const user = await UserModel.create({ 
             email: email, 
             firstName: firstName, 
             lastName: lastName, 
-            password: password, 
+            password: hashPassword, 
             userName: userName, 
             phoneNumber: phone,
             confirmationCode: await GenCode(),
@@ -64,7 +65,6 @@ export const resendCodeService = async (req: IUserResendcode) => {
     try{
         const { email } = req;
         const user = await UserModel.findOne({email: email})
-        console.log("user ======", user)
         if(!user){
             return{
                 status:404,
@@ -130,7 +130,8 @@ export const UserLoginService = async ( req: IUserLogin ) => {
                 message:"User Not Found", 
             };
         }
-        const verifyPass = await bcrypt.compare(password, userEmail?.password || userByUsername?.password);
+        const verifyPass = await bcrypt.compare(password, userEmail?.password || userByUsername?.password );
+        console.log("verifyPass ======", verifyPass);
         if(!verifyPass){
             return{
                 status:401,
@@ -232,8 +233,8 @@ export const resetPassService = async(req: IUserResetPass) => {
                 message: "Passwords do not match"
             }
         }
-
-        const newpassword = await bcrypt.hash(password, 10);
+        
+        const newpassword = await bcrypt.hash(password, 12);
         user.password = newpassword;
         user.confirmationCode = "";
         const newUser = await user.save();
