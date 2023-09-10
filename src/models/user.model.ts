@@ -68,15 +68,6 @@ interface UserDoc extends Document {
       },
   },{ timestamps: true });
 
-// Encrypt password with bcrypt
-UserSchema.pre("save", async function (next) {
-    try {
-      if (!this.isModified("password")) return next();
-      this.password = await bcrypt.hash(this.password, 12);
-    } catch (error: any) {
-      throw new Error(error);
-    }
-  });
   
   const UserModel = mongoose.model<UserDoc>("User", UserSchema);
   

@@ -2,11 +2,6 @@ const createUser = {
     tags: ["Users"],
     description: "Create a new user",
     operationId: "createUser",
-    // security: [
-    //   {
-    //     bearerAuth: [],
-    //   },
-    // ],
     requestBody: {
       content: {
         "application/json": {
@@ -730,11 +725,11 @@ const createUserBody = {
     },
     email: {
       type: "string",
-      example: "johnsnow@email.com",
+      example: "johnsnow@gmail.com",
     },
     phone: {
       type: "string",
-      example: "+1234567890",
+      example: "+2347034864987",
     },
     password: {
       type: "string",
