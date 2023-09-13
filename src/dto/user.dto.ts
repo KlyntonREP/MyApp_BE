@@ -26,8 +26,9 @@ export const UserRegisterInputSchema = object({
     }),
   });
   
-export interface IUserVerify{
-  verification_code: string;
+export interface IEmailVerify{
+  otp: string;
+  email: string;
 }
 
 export interface IUserLogin{
@@ -45,7 +46,8 @@ export interface IUserForgotPassEmail{
 }
 
 export interface IUserResetPass{
-  code: number;
+  email: string;
+  code: string;
   password: string;
   confirmPassword: string;
 }

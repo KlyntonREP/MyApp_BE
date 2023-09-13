@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import {  createUserService, 
-    verifyUserService , 
+    verifyEmailService , 
     UserLoginService, 
     resendCodeService, 
     forgotPassEmailService,
@@ -57,7 +57,7 @@ export const resendCodeController  = async (req: Request, res: Response) => {
  */
 export const verifyUserController = async(req: Request, res: Response) => {
     try{
-        const response: any = await verifyUserService(req.body);
+        const response: any = await verifyEmailService(req.body);
         return res.status(response.status).json({
             status: response.status, 
             message: response.message, 
