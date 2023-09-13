@@ -82,7 +82,7 @@ const createUser = {
 
 const verifyUser = {
   tags: ["Users"],
-  description: "Verify a user",
+  description: "Verify a user endpoint. Send the Email as payload(in the body not params) when using this endpoint",
   operationId: "verifyUser",
   // security: [
   //   {
@@ -95,10 +95,15 @@ const verifyUser = {
         schema: {
           type: "object",
           properties: {
-            verification_code: {
+            email: {
+              description: "This email wont be visible to the users on the frontend",
+              type: "string",
+              example: "johndoe@gmail.com",
+            },
+            otp: {
               description: "Verification code that was sent to the user's email",
-              type: "number",
-              example: 982345,
+              type: "string",
+              example: "982345",
             },
           },
         },
@@ -141,6 +146,22 @@ const verifyUser = {
     },
   },
   "400": {
+    description: "Code Expired",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            msg: {
+              type: "string",
+              example: "Code Has Expired Please Request For A New One",
+            },
+          },
+        },
+      },
+    },
+  },
+  "409": {
     description: "Invalid verification code",
     content: {
       "application/json": {
@@ -586,7 +607,7 @@ const forgotPassPhone = {
 const resetPass = {
   tags: ["Users"],
   description:
-    "Reset User Password By Using The Code Sent From Forgot Password Endpoint",
+    "Reset User Password By Using The Code Sent From Forgot Password Endpoint. Send The Email As payload(It should not be visible to users)",
   operationId: "resetpassword",
   security: [
     {
@@ -619,6 +640,11 @@ const resetPass = {
         schema: {
           type: "object",
           properties: {
+            email: {
+              description: "Email address",
+              type: "string",
+              example: "Johndoe@gmail.com",
+            },
             code: {
               description: "Reset Password Code",
               type: "string",

@@ -1,16 +1,16 @@
 import mongoose, {Schema} from "mongoose";
-import bcrypt from "bcryptjs";
 
 interface UserDoc extends Document {
     email: string;
     firstName: string;
     lastName: string;
     userName: string;
-    password: string;
+    password: string | undefined;
     phoneNumber: string;
-    image: string;
-    gender: string;
-    confirmationCode: string;
+    image: string | null;
+    gender: string | null;
+    isEmailVerified: boolean;
+    isPhoneVerified: boolean;
     status: string;
   }
 
@@ -57,9 +57,13 @@ interface UserDoc extends Document {
         type: String,
         enums: ["m", "f", "others"],
       },
-      confirmationCode: {
-        type: String,
-        unique: true,
+      isEmailVerified: {
+        type: Boolean,
+        default: false,
+      },
+      isPhoneVerified: {
+        type: Boolean,
+        default: false,
       },
       status: {
         type: String,

@@ -1,6 +1,6 @@
-import { UserModel } from "../models/index"
+import { UserModel, OtpModel } from "../models/index"
 import { IUserRegisterInput, 
-    IUserVerify, 
+    IEmailVerify, 
     IUserLogin, 
     IUserResendcode, 
     IUserForgotPassEmail,
@@ -27,8 +27,7 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
         if(password != confirmPassword){
             return{
                 status:400,
-                message:"Error",
-                data: 'Passwords do not match' 
+                message:"Passwords Do Not Match",
             };
         }
         const hashPassword = await bcrypt.hash(password, 12);
@@ -39,15 +38,23 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
             password: hashPassword, 
             userName: userName, 
             phoneNumber: phone,
-            confirmationCode: await GenCode(),
         });
 
+        const genOtp = await GenCode()
+        const hashOtp = await bcrypt.hash(genOtp,12)
+        const OtModel = await OtpModel.create({
+            otp: hashOtp,
+            userEmail: user.email  
+        })
+
+        user.password = undefined
         const name = `${user.firstName} ${user.lastName}`;
-        const message = `<h1>Email Confirmation</h1>
+        const message = `<h1>Email Verification</h1>
         <h2>Hello ${name}</h2>
         <p>Kindly verify your email address to complete the signup and login to your account</br> by inputing the code below.</p>
-        <p>Verification Code: ${user?.confirmationCode}</p>`;
-        const subject = "Please confirm your account";
+        <p>Verification Code: ${genOtp}</p>
+        <p>This Code expires in 5mins</p>`;
+        const subject = "Please Verify Your Email";
 
         await sendMail(name, user?.email, subject, message);
         
@@ -64,21 +71,32 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
 export const resendCodeService = async (req: IUserResendcode) => {
     try{
         const { email } = req;
-        const user = await UserModel.findOne({email: email})
+        const user = await UserModel.findOne({ email: email })
         if(!user){
             return{
                 status:404,
                 message:"user not found",
             };
         }
-        user.confirmationCode = await GenCode()
-        const newUser  = await user.save();
+        const findOtp: any = await OtpModel.findOne({ userEmail: user.email });
+        const genOtp = await GenCode()
+        const hashOtp = await bcrypt.hash(genOtp, 12);
+        if(findOtp){     
+            findOtp.otp = hashOtp
+            await findOtp.save();
+        }else{
+            const OtModel = await OtpModel.create({
+                otp: hashOtp,
+                userEmail: user.email  
+            })
+        }
         const name = `${user.firstName} ${user.lastName}`;
-        const message = `<h1>Email Confirmation</h1>
+        const message = `<h1>Email Verification</h1>
         <h2>Hello ${name}</h2>
         <p>Kindly verify your email address to complete the signup and login to your account</br> by inputing the code below.</p>
-        <p>Verification Code: ${newUser.confirmationCode}</p>`;
-        const subject = "Please confirm your account";
+        <p>Verification Code: ${genOtp}</p>
+        <p>This Code expires in 5mins</p>`;
+        const subject = "Please Verify Your Email";
 
         await sendMail(name, user?.email, subject, message);
         if(sendMail != null){
@@ -91,25 +109,35 @@ export const resendCodeService = async (req: IUserResendcode) => {
     }
 }
 
-export const verifyUserService = async (req: IUserVerify) => {
+export const verifyEmailService = async (req: IEmailVerify) => {
     try{
-        const { verification_code } = req
-        const verifyUser: any = await UserModel.findOne({ confirmationCode: verification_code});
-        if(!verifyUser || verifyUser === null){
+        const { otp, email } = req
+        const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
+        console.log(verifyEmail)
+        
+        if(!verifyEmail || verifyEmail === null){
             return{
                 status:400,
-                message:"Invalid Code", 
+                message:"Code Has Expired Please Request For A New One", 
             };
         }
-        if(verifyUser.status === "Active"){
+        const rightOtp = await bcrypt.compare(otp, verifyEmail.otp)
+        if(!rightOtp){
+            return{
+                status:409,
+                message:"Invalid OTP", 
+            }; 
+        }
+        const user: any = await UserModel.findOne({ email: verifyEmail.userEmail})
+        if(user.status === "Active" && user.IsEmailVerified == true ){
             return{
                 status: 401,
-                message: "This Account Is Already verified"
+                message: "This Email Is Already verified"
             }
         }
-        verifyUser.status = "Active";
-        verifyUser.confirmationCode = "";
-        const newVerify = await verifyUser.save();
+        user.status = "Active";
+        user.isEmailVerified = true;
+        const newVerify = await user.save();
         
         return {status: 200, message: "Verification successful!!!✅", data: newVerify}
 
@@ -131,7 +159,6 @@ export const UserLoginService = async ( req: IUserLogin ) => {
             };
         }
         const verifyPass = await bcrypt.compare(password, userEmail?.password || userByUsername?.password );
-        console.log("verifyPass ======", verifyPass);
         if(!verifyPass){
             return{
                 status:401,
@@ -158,26 +185,36 @@ export const UserLoginService = async ( req: IUserLogin ) => {
 export const forgotPassEmailService = async(res: IUserForgotPassEmail) => {
     try{
         const { email } = res;
-        const userByEmail: any = await UserModel.findOne({ email: email });
+        const user: any = await UserModel.findOne({ email: email });
         
-        if(!userByEmail){
+        if(!user){
             return{
                 status:404,
                 message:"User Not Found", 
             };
         }
-        userByEmail.confirmationCode = await GenCode()
-        await userByEmail.save();
+        const findOtp: any = await OtpModel.findOne({ userEmail: user.email });
+        const genOtp = await GenCode()
+        const hashOtp = await bcrypt.hash(genOtp, 12);
+        if(findOtp){     
+            findOtp.otp = hashOtp
+            await findOtp.save();
+        }else{
+            const OtModel = await OtpModel.create({
+                otp: hashOtp,
+                userEmail: user.email  
+            })
+        }
         
 
-        const name = `${userByEmail?.firstName} ${userByEmail?.lastName}`;
+        const name = `${user?.firstName} ${user?.lastName}`;
         const message = `<h1>Forgot Password</h1>
-        <h2>Hello ${userByEmail?.firstName} ${userByEmail?.lastName }</h2>
+        <h2>Hello ${user?.firstName} ${user?.lastName }</h2>
         <p>A reset password action wan initiated using your email. If the action was your doing please input the code below.</p>
-        <p>Verification Code: ${userByEmail?.confirmationCode }</p>`;
+        <p>Verification Code: ${genOtp }</p>`;
         const subject = "Please confirm your account";
 
-        await sendMail(name, userByEmail?.email, subject, message);
+        await sendMail(name, user?.email, subject, message);
         if(sendMail != null){
             return {status: 200, message: "Reset Password Code Sent Successfully"}
         }
@@ -219,13 +256,21 @@ export const forgotPassPhoneService = async(req: IUserForgotPassPhone) => {
 
 export const resetPassService = async(req: IUserResetPass) => {
     try{
-        const { code, password, confirmPassword} = req;
-        const user: any = await UserModel.findOne({ confirmationCode: code});
-        if(!user){
+        const { email, code, password, confirmPassword} = req;
+        const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
+        
+        if(!verifyEmail || verifyEmail === null){
             return{
                 status:400,
-                message:"Invalid Code, Please Input The Correct Code.", 
+                message:"Code Has Expired Please Request For A New One", 
             };
+        }
+        const rightOtp = await bcrypt.compare(code, verifyEmail.otp)
+        if(!rightOtp){
+            return{
+                status:409,
+                message:"Invalid OTP", 
+            }; 
         }
         if (confirmPassword !== password) {
             return {
@@ -233,10 +278,9 @@ export const resetPassService = async(req: IUserResetPass) => {
                 message: "Passwords do not match"
             }
         }
-        
+        const user: any = await UserModel.findOne({ email: verifyEmail.userEmail})
         const newpassword = await bcrypt.hash(password, 12);
         user.password = newpassword;
-        user.confirmationCode = "";
         const newUser = await user.save();
 
         return {status: 200, message: "Password Reset Successfully", data: newUser}
