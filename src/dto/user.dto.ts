@@ -56,4 +56,11 @@ export interface IUserForgotPassPhone {
   phoneNumber: string;
 }
 
+export interface IEditProfile{
+  name?: string;
+  userName?: string;
+  gender: string;
+  bio?: string;
+}
+
 export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>

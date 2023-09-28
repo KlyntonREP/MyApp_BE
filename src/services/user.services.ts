@@ -6,6 +6,7 @@ import { IUserRegisterInput,
     IUserForgotPassEmail,
     IUserResetPass,
     IUserForgotPassPhone,
+    IEditProfile,
 } from "../dto"
 import log from '../utility/logger';
 import { GenCode, sendMail} from "../utility/helpers";
@@ -174,7 +175,7 @@ export const UserLoginService = async ( req: IUserLogin ) => {
         return{status: 200, message:"Login Successful", data:{
             _id: userEmail?.id || userByUsername?.id,
             username: userEmail?.userName || userByUsername?.userName,
-            token: await signToken({ user: userEmail?.id || userByUsername?.id, username: userEmail?.userName || userByUsername?.userName})
+            token: await signToken({ id: userEmail?.id || userByUsername?.id, username: userEmail?.userName || userByUsername?.userName})
         }}
     }catch(error) {
         console.log(error);
@@ -204,8 +205,7 @@ export const forgotPassEmailService = async(res: IUserForgotPassEmail) => {
                 otp: hashOtp,
                 userEmail: user.email  
             })
-        }
-        
+        }    
 
         const name = `${user?.firstName} ${user?.lastName}`;
         const message = `<h1>Forgot Password</h1>
@@ -260,24 +260,19 @@ export const resetPassService = async(req: IUserResetPass) => {
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
         
         if(!verifyEmail || verifyEmail === null){
-            return{
-                status:400,
-                message:"Code Has Expired Please Request For A New One", 
-            };
+            return{ status:400, message:"Code Has Expired Please Request For A New One" };
         }
+
         const rightOtp = await bcrypt.compare(code, verifyEmail.otp)
+
         if(!rightOtp){
-            return{
-                status:409,
-                message:"Invalid OTP", 
-            }; 
+            return{ status:409, message:"Invalid OTP" };
         }
+
         if (confirmPassword !== password) {
-            return {
-                status: 401,
-                message: "Passwords do not match"
-            }
+            return { status: 401, message: "Passwords do not match" }
         }
+
         const user: any = await UserModel.findOne({ email: verifyEmail.userEmail})
         const newpassword = await bcrypt.hash(password, 12);
         user.password = newpassword;
@@ -287,12 +282,68 @@ export const resetPassService = async(req: IUserResetPass) => {
 
     }catch(error){
         console.log(error);
-        return{status: 500, message: "Internal Server Error"}   
+        return { status: 500, message: "Internal Server Error" }   
     }
 }
 
+export const followService = async( user: string, followId: string) => {
+    try{
+        if(!user){
+            return { status: 404, message: "User Not Found"}
+        }
+        const followProfile = await UserModel.findById( followId ).exec()
+        if(!followProfile){
+            return { status: 401, message:"Can't Follow This User, They Do Not Exist"}
+        }
+        const User:any = await UserModel.findById(user).exec()
+        if(User.following.includes(followId)){
+            return { status: 400, message:"Already Following This User. Cannot Follow User Twice"}
+        }
+        
+        followProfile.followers.push(user)
+        User.following.push(followId)
+        followProfile.save()
+        User.save()
+        return { status: 200, message:"Followed User Successfuly", data: User}
 
+    }catch(error){
+        console.log("This error ====",error)
+        return{status: 500, message: "Internal Server Error"}
+    }
+}
 
+export const unfollowService = async(user:string, unfollowId:string) => {
+    try {
+        if(!user){
+            return { status: 404, message: "User Not Found"}
+        }
+        const unfollowProfile: any = await UserModel.findById( unfollowId ).exec()
+        if(!unfollowProfile){
+            return { status: 401, message:"Can't Unfollow This User, They Do Not Exist"}
+        }
+        const User: any = await UserModel.findById(user).exec()
+        if(User.following.includes(unfollowId)){
+            User.following.pull(unfollowId);
+            unfollowProfile.followers.pull(user);
+            unfollowProfile.save();
+            User.save();
+            return { status: 200, message:"User Unfollowed Successfully", data: User}
+        }
+        return { status: 400, message: "Can't Unfollow A User You Are Not Following"}
+
+    }catch(error){
+        console.log("This error ====",error)
+        return{status: 500, message: "Internal Server Error"}
+    }
+}
+
+// export const editProfileService = async(req: IEditProfile) => {
+//     try{
+//         console.log(req.user.id)
+//     }catch(error) {
+//         return{status: 500, message: "Internal Server Error"} 
+//     }
+// }
 
 
 

@@ -5,7 +5,9 @@ import {  createUserService,
     resendCodeService, 
     forgotPassEmailService,
     forgotPassPhoneService,
-    resetPassService
+    resetPassService,
+    followService,
+    unfollowService
 } from "../services/index";
 
 
@@ -147,4 +149,52 @@ export const resetPassController =  async(req: Request, res: Response) => {
         console.log(error);
         res.status(500).json({message: error.message});
     }
+}
+
+/**
+ * @description Follow A User
+ * @method POST
+ * @route /api/user/follow/:followId
+ * @access public
+ */
+
+export const followController =  async(req: Request, res: Response) => {
+    try{
+        const user: string = await req.user.id
+        const { followId: followId } = req.params;
+        const response: any = await followService(user, followId);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
+    
+}
+
+/**
+ * @description Unfollow A User
+ * @method POST
+ * @route /api/user/unfollow/:unfollowId
+ * @access public
+ */
+
+export const unfollowController =  async(req: Request, res: Response) => {
+    try{
+        const user: string = await req.user.id
+        const { unfollowId: unfollowId } = req.params;
+        const response: any = await unfollowService(user, unfollowId);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
+    
 }

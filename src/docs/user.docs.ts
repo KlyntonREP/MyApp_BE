@@ -734,6 +734,235 @@ const resetPass = {
   },
 };
 
+const followUser = {
+  tags: ["Users"],
+  description:
+    "Follow A User",
+  operationId: "followUser",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  parameters: [
+    {
+      name: "followId",
+      in: "path",
+      description: "This Id is the Id Of The User To Be Followed",
+      required: true,
+      schema: {
+        type: "string",
+      },
+    },
+    // {
+    //   name: "Token",
+    //   in: "path",
+    //   description: "This Is The Token Sent To The Vendors's Email",
+    //   required: true,
+    //   schema: {
+    //     type: "string",
+    //   },
+    // },
+  ],
+  responses: {
+    "200": {
+      description: "Followed User Successfuly",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Followed User Successfuly!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Already Following This User. Cannot Follow User Twice",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Already Following This User. Cannot Follow User Twice",
+              },
+            },
+          },
+        },
+      },
+    },
+    "401": {
+      description: "Can't Follow This User, They Do Not Exist",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Can't Follow This User, They Do Not Exist!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "UnAuthorized",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "UnAuthorized!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const unfollowUser = {
+  tags: ["Users"],
+  description:
+    "Unfollow A User",
+  operationId: "unfollowUser",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  parameters: [
+    {
+      name: "unfollowId",
+      in: "path",
+      description: "This Id is the Id Of The User To Be Unfollowed",
+      required: true,
+      schema: {
+        type: "string",
+      },
+    },
+    // {
+    //   name: "Token",
+    //   in: "path",
+    //   description: "This Is The Token Sent To The Vendors's Email",
+    //   required: true,
+    //   schema: {
+    //     type: "string",
+    //   },
+    // },
+  ],
+  responses: {
+    "200": {
+      description: "User Unfollowed Successfully",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Unfollowed Successfully!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Can't Unfollow User A You Are Not Following",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Can't Unfollow A User You Are Not Following",
+              },
+            },
+          },
+        },
+      },
+    },
+    "401": {
+      description: "Can't Unfollow This User, They Do Not Exist",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Can't Unfollow This User, They Do Not Exist!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "UnAuthorized",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "UnAuthorized!",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+
 const createUserBody = {
   type: "object",
   properties: {
@@ -779,5 +1008,7 @@ export {
   userLogin,
   forgotPassEmail,
   forgotPassPhone,
-  resetPass
+  resetPass,
+  followUser,
+  unfollowUser,
 };
