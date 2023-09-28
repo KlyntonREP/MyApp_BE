@@ -12,16 +12,18 @@ interface UserDoc extends Document {
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
     status: string;
+    followers: string[];
+    following: string[];
   }
 
   const UserSchema: Schema = new mongoose.Schema<UserDoc>({
     firstName: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
     lastName: { 
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
     userName: { 
       type: String,
@@ -30,16 +32,16 @@ interface UserDoc extends Document {
       trim: true,
     },
     email: {
-        required: true,
-        type: String,
-        unique: true,
-        maxlength: 255,
-        lowercase: true,
-        trim: true,
-        match: [ 
-            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-            "Please, enter a valid email",
-        ],
+    required: true,
+    type: String,
+    unique: true,
+    maxlength: 255,
+    lowercase: true,
+    trim: true,
+    match: [ 
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        "Please, enter a valid email",
+      ],
     },
     phoneNumber: {
       type: String,
@@ -51,25 +53,33 @@ interface UserDoc extends Document {
       minLenght: [6, "Password must be at least 6 characters"],
     },
     image: {
-        type: String,
-      },
-      gender: {
-        type: String,
-        enums: ["m", "f", "others"],
-      },
-      isEmailVerified: {
-        type: Boolean,
-        default: false,
-      },
-      isPhoneVerified: {
-        type: Boolean,
-        default: false,
-      },
-      status: {
-        type: String,
-        enum: ["Pending", "Active"],
-        default: "Pending",
-      },
+      type: String,
+    },
+    gender: {
+      type: String,
+      enums: ["m", "f", "others"],
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Active"],
+      default: "Pending",
+    },
+    followers: {
+      type: [String],
+      default:[]
+    },
+    following:{
+      type: [String],
+      default:[]
+    },
   },{ timestamps: true });
 
   

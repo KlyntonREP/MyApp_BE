@@ -7,7 +7,9 @@ import {
   userLogin,
   forgotPassEmail,
   forgotPassPhone,
-  resetPass
+  resetPass,
+  followUser,
+  unfollowUser,
 } from "./user.docs";
 
 //options object for swaggerjs
@@ -42,7 +44,13 @@ export const options = {
       },
       "/user/reset-password": {
         post: resetPass,
-      }
+      },
+      "/user/follow/{followId}": {
+        post: followUser,
+      },
+      "/user/unfollow/{unfollowId}": {
+        post: unfollowUser,
+      },
     },
     components: {
       securitySchemes: {

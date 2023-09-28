@@ -17,7 +17,8 @@ const StartServer = async () => {
   await connectDB();
 
   app.listen(PORT, () => {
-    log.info(`Server listening on ${PORT}`);
+    log.info(`Server listening on: http://localhost:${PORT}`);
+    log.info(`Swagger doc listening on: http://localhost:${PORT}/api/docs`);
   });
 };
 

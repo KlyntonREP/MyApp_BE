@@ -23,15 +23,16 @@ interface OtpDoc extends Document {
             "Please, enter a valid email",
         ],
     },
-    expiresAt: {
-        type: Date,
-        default: Date.now(),
-        index: { expires: 300}
-    }
+    // expiresAt: {
+    //     type: Date,
+    //     default: Date.now(),
+    //     index: { expires: '5m' },
+    // }
     
   },{ timestamps: true });
 
-  
+  OtpSchema.index({createdAt: 1},{expireAfterSeconds: 300});
+
   const OtpModel = mongoose.model<OtpDoc>("Otp", OtpSchema);
   
   export default OtpModel;
