@@ -10,6 +10,9 @@ import {
   resetPass,
   followUser,
   unfollowUser,
+  updateProfile,
+  getProfile,
+  getUserById,
 } from "./user.docs";
 
 //options object for swaggerjs
@@ -44,6 +47,15 @@ export const options = {
       },
       "/user/reset-password": {
         post: resetPass,
+      },
+      "/user/update-profile": {
+        put: updateProfile,
+      },
+      "/user/profile": {
+        get: getProfile,
+      },
+      "/user/profile/{userId}": {
+        get: getUserById,
       },
       "/user/follow/{followId}": {
         post: followUser,

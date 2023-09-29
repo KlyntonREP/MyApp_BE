@@ -9,6 +9,7 @@ interface UserDoc extends Document {
     phoneNumber: string;
     image: string | null;
     gender: string | null;
+    bio: string | null;
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
     status: string;
@@ -58,6 +59,9 @@ interface UserDoc extends Document {
     gender: {
       type: String,
       enums: ["m", "f", "others"],
+    },
+    bio: {
+      type: String,
     },
     isEmailVerified: {
       type: Boolean,
