@@ -7,8 +7,11 @@ import {
   forgotPassEmailController,
   forgotPassPhoneController,
   resetPassController,
+  updateProfilerController,
   followController,
   unfollowController,
+  getProfileController,
+  getUserByIdController, 
 } from '../controllers/index';
 import { Authenticate } from '../middlewares/auth.middleware';
 import validate from '../middlewares/validateResource';
@@ -23,6 +26,9 @@ router.post('/login', UserLoginController);
 router.post('/forgot-password-email', forgotPassEmailController);  
 router.post('/forgot-password-phone', forgotPassPhoneController);  
 router.post('/reset-password', resetPassController);
+router.put('/update-profile', Authenticate, updateProfilerController);
+router.get('/profile', Authenticate, getProfileController);
+router.get('/profile/:userId', Authenticate, getUserByIdController)
 router.post('/follow/:followId', Authenticate, followController);
 router.post('/unfollow/:unfollowId', Authenticate, unfollowController);
 export default router;

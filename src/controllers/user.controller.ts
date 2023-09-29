@@ -7,7 +7,10 @@ import {  createUserService,
     forgotPassPhoneService,
     resetPassService,
     followService,
-    unfollowService
+    unfollowService,
+    updateProfileService,
+    getProfileService,
+    getUserByIdService
 } from "../services/index";
 
 
@@ -152,12 +155,73 @@ export const resetPassController =  async(req: Request, res: Response) => {
 }
 
 /**
+ * @description Update Profile
+ * @method PUT
+ * @route /api/user/update-profile
+ * @access public
+ */
+export const updateProfilerController = async(req: Request, res: Response) => {
+    try{
+        const user: string = await req.user.id;
+        const response: any = await updateProfileService(user, req.body);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        }); 
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+/**
+ * @description Get Profile
+ * @method GET
+ * @route /api/user/profile
+ * @access public
+ */
+export const getProfileController = async(req: Request, res: Response) => {
+    try{
+        const user: string = await req.user.id
+        const response: any = await getProfileService(user);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
+    }catch(error: any){
+        res.status(500).json({message: error.message});
+    }
+}
+
+
+/**
+ * @description Get User By Id
+ * @method GET
+ * @route /api/user/profile/:userId
+ * @access public
+ */
+export const getUserByIdController = async(req: Request, res: Response) => {
+    try{
+        const { userId: userId } = req.params;
+        const response: any = await getUserByIdService(userId);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
+    }catch(error: any){
+        res.status(500).json({message: error.message});
+    }
+}
+
+/**
  * @description Follow A User
  * @method POST
  * @route /api/user/follow/:followId
  * @access public
  */
-
 export const followController =  async(req: Request, res: Response) => {
     try{
         const user: string = await req.user.id
@@ -169,7 +233,6 @@ export const followController =  async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
         res.status(500).json({message: error.message});
     }
     

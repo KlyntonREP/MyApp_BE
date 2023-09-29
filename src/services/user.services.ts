@@ -17,9 +17,9 @@ import config from "../config/environmentVariables";
 
 
 
-export const createUserService = async(req: IUserRegisterInput["body"]) => {
+export const createUserService = async(payload: IUserRegisterInput["body"]) => {
     try{
-        const { firstName, lastName, email, password, userName, phone, confirmPassword } = req;
+        const { firstName, lastName, email, password, userName, phone, confirmPassword } = payload;
         const userExist = await UserModel.findOne({ email: email });
         if(userExist) return{
             status:409,
@@ -69,9 +69,9 @@ export const createUserService = async(req: IUserRegisterInput["body"]) => {
     }
 }
 
-export const resendCodeService = async (req: IUserResendcode) => {
+export const resendCodeService = async (payload: IUserResendcode) => {
     try{
-        const { email } = req;
+        const { email } = payload;
         const user = await UserModel.findOne({ email: email })
         if(!user){
             return{
@@ -110,11 +110,10 @@ export const resendCodeService = async (req: IUserResendcode) => {
     }
 }
 
-export const verifyEmailService = async (req: IEmailVerify) => {
+export const verifyEmailService = async (payload: IEmailVerify) => {
     try{
-        const { otp, email } = req
+        const { otp, email } = payload;
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
-        console.log(verifyEmail)
         
         if(!verifyEmail || verifyEmail === null){
             return{
@@ -143,14 +142,13 @@ export const verifyEmailService = async (req: IEmailVerify) => {
         return {status: 200, message: "Verification successful!!!✅", data: newVerify}
 
     }catch(error) {
-        console.log(error);
         return{status: 500, message:"Internal Server Error"}
     };
 }
 
-export const UserLoginService = async ( req: IUserLogin ) => {
+export const UserLoginService = async (payload: IUserLogin ) => {
     try{
-        const { username, email, password } = req
+        const { username, email, password } = payload;
         const userEmail: any = await UserModel.findOne({ email: email });
         const userByUsername: any = await UserModel.findOne({ userName: username });
         if(!userEmail && !userByUsername){
@@ -178,14 +176,13 @@ export const UserLoginService = async ( req: IUserLogin ) => {
             token: await signToken({ id: userEmail?.id || userByUsername?.id, username: userEmail?.userName || userByUsername?.userName})
         }}
     }catch(error) {
-        console.log(error);
         return{status: 500, message:"Internal Server Error"}
     };
 };
 
-export const forgotPassEmailService = async(res: IUserForgotPassEmail) => {
+export const forgotPassEmailService = async(payload: IUserForgotPassEmail) => {
     try{
-        const { email } = res;
+        const { email } = payload;
         const user: any = await UserModel.findOne({ email: email });
         
         if(!user){
@@ -221,14 +218,13 @@ export const forgotPassEmailService = async(res: IUserForgotPassEmail) => {
         return {status: 400, message:"Error Sending Email"}
 
     }catch(error){
-        console.log(error);
         return{status: 500, message: "Internal Server Error"}
     }
 }
 
-export const forgotPassPhoneService = async(req: IUserForgotPassPhone) => {
+export const forgotPassPhoneService = async(payload: IUserForgotPassPhone) => {
     try{
-        const { phoneNumber } = req;
+        const { phoneNumber } = payload;
         const accountSid = config.TWILO_ACCOUNT_SID;
         const authToken = config.TWILO_AUTH_TOKEN;
         const client = twilio(accountSid, authToken);
@@ -249,14 +245,13 @@ export const forgotPassPhoneService = async(req: IUserForgotPassPhone) => {
         console.log(message.sid)
         return {status: 200, message: "Reset Password Code Sent Successfully"}
     }catch(error){
-        console.log(error)
         return{status: 500, message: "Internal Server Error"}
     }
 }
 
-export const resetPassService = async(req: IUserResetPass) => {
+export const resetPassService = async(payload: IUserResetPass) => {
     try{
-        const { email, code, password, confirmPassword} = req;
+        const { email, code, password, confirmPassword} = payload;
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
         
         if(!verifyEmail || verifyEmail === null){
@@ -281,8 +276,61 @@ export const resetPassService = async(req: IUserResetPass) => {
         return {status: 200, message: "Password Reset Successfully", data: newUser}
 
     }catch(error){
-        console.log(error);
         return { status: 500, message: "Internal Server Error" }   
+    }
+}
+
+export const updateProfileService = async(user:string, payload: IEditProfile) => {
+    try{
+        const firstName = payload.fullName?.split(' ')[0];
+        const lastName = payload.fullName?.split(' ')[1];
+        if(!user){
+            return { status: 404, message: "User Not Found"}
+        }
+        const User = await UserModel.findById(user).exec();
+        if(!User){
+            return { status: 401, message: "User Does Exist"}
+        }
+        User.firstName = firstName || User.firstName;
+        User.lastName = lastName || User.lastName;
+        User.userName = payload.userName || User.userName
+        User.gender = payload.gender || User.gender;
+        User.bio = payload.bio || User.bio;
+        User.email = payload.email || User.email;
+        User.phoneNumber = payload.phoneNumber || User.phoneNumber;
+
+        const findUserName = await UserModel.findOne({ userName: payload.userName})
+        if(findUserName) {
+            return { status:400, message: "This User Has Already Been Taken"}
+        }
+
+        const updateUser = User.save();
+        return{status: 200, message: "User Profile Updated Successfully", data: User} 
+
+    }catch(error) {
+        return{status: 500, message: "Internal Server Error"} 
+    }
+}
+
+export const getProfileService = async(user: string) => {
+    try{
+        if(!user) return{status:404, message: "User not found"};
+        const User = await UserModel.findById(user);
+        return {status:200, message: "User found", data: User};
+    }catch(error){
+        return{status: 500, message: "Internal Server Error"}
+    }
+}
+
+export const getUserByIdService = async(userId:string) => {
+    try{
+        const User = await UserModel.findById(userId);
+        if(!User) {
+            return { status: 404, message: "User not found"}
+        }
+        return {status:200, message: "User found", data: User};
+    }catch(error){
+        return{status: 500, message: "Internal Server Error"}
     }
 }
 
@@ -337,13 +385,7 @@ export const unfollowService = async(user:string, unfollowId:string) => {
     }
 }
 
-// export const editProfileService = async(req: IEditProfile) => {
-//     try{
-//         console.log(req.user.id)
-//     }catch(error) {
-//         return{status: 500, message: "Internal Server Error"} 
-//     }
-// }
+
 
 
 

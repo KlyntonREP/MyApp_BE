@@ -734,6 +734,262 @@ const resetPass = {
   },
 };
 
+const updateProfile = {
+  tags: ["Users"],
+  description:
+    "Update Profile",
+  operationId: "updateProfile",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            fullName: {
+              description: "User's Full Name",
+              type: "string",
+              example: "John Doe",
+            },
+            userName: {
+              description: "User's Username",
+              type: "string",
+              example: "JohnDoe",
+            },
+            bio: {
+              description: "Bio, About User",
+              type: "string",
+              example: "This Is My Bio. It's About Me",
+            },
+          },
+        },
+      },
+    },
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "User Profile Updated Successfully",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Profile Updated Successfully",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "This User Has Already Been Taken",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "This User Has Already Been Taken",
+              },
+            },
+          },
+        },
+      },
+    },
+    "401": {
+      description: "User Does Exist",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Does Exist",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User Not Found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Not Found",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const getProfile = {
+  tags: ["Users"],
+  description:
+    "Get User Profile",
+  operationId: "getProfile",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  responses: {
+    "200": {
+      description: "User Found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Found",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User Not Found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Not Found",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const getUserById = {
+  tags: ["Users"],
+  description:
+    "Get Other User Profile",
+  operationId: "getUserById",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  parameters: [
+    {
+      name: "userId",
+      in: "path",
+      description: "This Id is the Id Of The User Profile To Be Fetched",
+      required: true,
+      schema: {
+        type: "string",
+      },
+    },
+  ],
+  responses: {
+    "200": {
+      description: "User Found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Found",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User Not Found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Not Found",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 const followUser = {
   tags: ["Users"],
   description:
@@ -814,7 +1070,7 @@ const followUser = {
       },
     },
     "404": {
-      description: "UnAuthorized",
+      description: "User Not Found",
       content: {
         "application/json": {
           schema: {
@@ -822,7 +1078,7 @@ const followUser = {
             properties: {
               message: {
                 type: "string",
-                example: "UnAuthorized!",
+                example: "User Not Found",
               },
             },
           },
@@ -928,7 +1184,7 @@ const unfollowUser = {
       },
     },
     "404": {
-      description: "UnAuthorized",
+      description: "User Not Found",
       content: {
         "application/json": {
           schema: {
@@ -936,7 +1192,7 @@ const unfollowUser = {
             properties: {
               message: {
                 type: "string",
-                example: "UnAuthorized!",
+                example: "User Not Found",
               },
             },
           },
@@ -1009,6 +1265,9 @@ export {
   forgotPassEmail,
   forgotPassPhone,
   resetPass,
+  updateProfile,
+  getProfile,
+  getUserById,
   followUser,
   unfollowUser,
 };
