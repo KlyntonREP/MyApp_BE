@@ -7,9 +7,11 @@ import { IUserRegisterInput,
     IUserResetPass,
     IUserForgotPassPhone,
     IEditProfile,
+    IEditEmail,
+    IChangeEmail,
 } from "../dto"
 import log from '../utility/logger';
-import { GenCode, sendMail} from "../utility/helpers";
+import { GenCode, generateAndStoreOTP, sendMail} from "../utility/helpers";
 import bcrypt from 'bcryptjs';
 import { signToken } from '../utility/jwtUtility';
 import twilio from 'twilio';
@@ -79,23 +81,12 @@ export const resendCodeService = async (payload: IUserResendcode) => {
                 message:"user not found",
             };
         }
-        const findOtp: any = await OtpModel.findOne({ userEmail: user.email });
-        const genOtp = await GenCode()
-        const hashOtp = await bcrypt.hash(genOtp, 12);
-        if(findOtp){     
-            findOtp.otp = hashOtp
-            await findOtp.save();
-        }else{
-            const OtModel = await OtpModel.create({
-                otp: hashOtp,
-                userEmail: user.email  
-            })
-        }
+        const otp = await generateAndStoreOTP(payload.email)
         const name = `${user.firstName} ${user.lastName}`;
         const message = `<h1>Email Verification</h1>
         <h2>Hello ${name}</h2>
         <p>Kindly verify your email address to complete the signup and login to your account</br> by inputing the code below.</p>
-        <p>Verification Code: ${genOtp}</p>
+        <p>Verification Code: ${otp}</p>
         <p>This Code expires in 5mins</p>`;
         const subject = "Please Verify Your Email";
 
@@ -139,7 +130,8 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
         user.isEmailVerified = true;
         const newVerify = await user.save();
         
-        return {status: 200, message: "Verification successful!!!✅", data: newVerify}
+        user.password = undefined
+        return {status: 200, message: "Verification successful!!!✅", data: user}
 
     }catch(error) {
         return{status: 500, message:"Internal Server Error"}
@@ -272,8 +264,8 @@ export const resetPassService = async(payload: IUserResetPass) => {
         const newpassword = await bcrypt.hash(password, 12);
         user.password = newpassword;
         const newUser = await user.save();
-
-        return {status: 200, message: "Password Reset Successfully", data: newUser}
+        user.password = undefined
+        return {status: 200, message: "Password Reset Successfully", data: user}
 
     }catch(error){
         return { status: 500, message: "Internal Server Error" }   
@@ -305,17 +297,85 @@ export const updateProfileService = async(user:string, payload: IEditProfile) =>
         }
 
         const updateUser = User.save();
-        return{status: 200, message: "User Profile Updated Successfully", data: User} 
+        User.password = undefined
+        return{status: 200, message: "User Profile Updated Successfully", data: user} 
 
     }catch(error) {
         return{status: 500, message: "Internal Server Error"} 
     }
 }
 
+export const editEmailService = async(user: string, payload: IEditEmail) => {
+    try{
+        if(!user) return{status: 404, message: "User Not Found"};
+
+        const User: any = await UserModel.findById(user).exec();
+        if(payload.email != User.email){
+            return{status: 401, message: "This Email Address Does Not Exist On Your Account"};
+        };
+
+        const otp = await generateAndStoreOTP(payload.email)
+        const name = `${User.firstName} ${User.lastName}`;
+        const message = `<h1>Change Of Email</h1>
+        <h2>Hello ${name}</h2>
+        <p>A request has been made to change your email.</br> 
+        If you did initiate this action please login to your account and change your password.</br>
+        Else input the code below to continue</p>
+        <p>Verification Code: ${otp}</p>
+        <p>This Code expires in 5mins</p>`;
+        const subject = "Email Change Code";
+
+        await sendMail(name, User.email, subject, message);
+        if(sendMail != null){
+            return {status: 200, message: "Email Change Code Sent Successfully"}
+        }
+        return {status: 400, message:"Error Sending Email"}
+
+    }catch(error) {
+        return{status: 500, message: "Internal Server Error"}
+    }
+}
+
+export const changeEmailService = async(user: string, payload: IChangeEmail) => {
+    try{
+        const { otp, email } = payload;
+        console.log("OTP ====",otp)
+        if(!user) {
+            return{status: 404, message: "User Not Found"}
+        }
+        const User: any = await UserModel.findById(user).exec();
+        const Otp: any = await OtpModel.findOne({userEmail: User.email});
+        console.log("User Otp", Otp)
+        if(!Otp || Otp === null){
+            return{
+                status:400,
+                message:"Code Has Expired Please Request For A New One", 
+            };
+        }
+        const rightOtp = await bcrypt.compare(otp, Otp.otp)
+        console.log("Right OTP: ", rightOtp)
+        if(!rightOtp){
+            return{
+                status:401,
+                message:"Invalid OTP", 
+            }; 
+        }
+        User.email = email;
+        User.save()
+        User.password = undefined
+        return {status: 200, message: "Email Changed Successfully", data: User}
+
+    }catch(error){
+        console.log(error)
+        return {status: 500, message: "Internal Server Error"};
+    }
+}
+
 export const getProfileService = async(user: string) => {
     try{
         if(!user) return{status:404, message: "User not found"};
-        const User = await UserModel.findById(user);
+        const User: any = await UserModel.findById(user);
+        User.password = undefined
         return {status:200, message: "User found", data: User};
     }catch(error){
         return{status: 500, message: "Internal Server Error"}
@@ -324,10 +384,11 @@ export const getProfileService = async(user: string) => {
 
 export const getUserByIdService = async(userId:string) => {
     try{
-        const User = await UserModel.findById(userId);
+        const User:any = await UserModel.findById(userId);
         if(!User) {
             return { status: 404, message: "User not found"}
         }
+        User.password = undefined
         return {status:200, message: "User found", data: User};
     }catch(error){
         return{status: 500, message: "Internal Server Error"}
@@ -352,10 +413,10 @@ export const followService = async( user: string, followId: string) => {
         User.following.push(followId)
         followProfile.save()
         User.save()
+        User.password = undefined
         return { status: 200, message:"Followed User Successfuly", data: User}
 
     }catch(error){
-        console.log("This error ====",error)
         return{status: 500, message: "Internal Server Error"}
     }
 }
@@ -375,6 +436,7 @@ export const unfollowService = async(user:string, unfollowId:string) => {
             unfollowProfile.followers.pull(user);
             unfollowProfile.save();
             User.save();
+            User.password = undefined
             return { status: 200, message:"User Unfollowed Successfully", data: User}
         }
         return { status: 400, message: "Can't Unfollow A User You Are Not Following"}

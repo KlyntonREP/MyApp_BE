@@ -2,9 +2,11 @@ import otpGenerator from "otp-generator";
 import config from "../config/environmentVariables";
 import nodemailer from "nodemailer";
 import log from "./logger";
+import { OtpModel } from "../models";
+import bcrypt from 'bcryptjs';
 
 export const GenCode = async () => {
-    return await otpGenerator.generate(6, {
+    return otpGenerator.generate(6, {
         digits: true,
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
@@ -46,3 +48,27 @@ export const sendMail = async (
       log.error(error.message);
     }
   };
+
+ 
+export const generateAndStoreOTP = async(userEmail:string) => {
+  try {
+    const findOtp = await OtpModel.findOne({ userEmail });
+
+    const genOtp = await GenCode();
+    const hashOtp = await bcrypt.hash(genOtp, 12);
+
+    if (findOtp) {
+      findOtp.otp = hashOtp;
+      await findOtp.save();
+    } else {
+      await OtpModel.create({
+        otp: hashOtp,
+        userEmail,
+      });
+    }
+    return genOtp;
+  } catch (error: any) {
+    console.error('Error generating and storing OTP:', error);
+    return{message: error.message}
+  }
+}

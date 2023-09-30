@@ -13,6 +13,8 @@ import {
   updateProfile,
   getProfile,
   getUserById,
+  editEmail,
+  changeEmail,
 } from "./user.docs";
 
 //options object for swaggerjs
@@ -50,6 +52,12 @@ export const options = {
       },
       "/user/update-profile": {
         put: updateProfile,
+      },
+      "/user/edit-email": {
+        post: editEmail,
+      },
+      "/user/change-email": {
+        put: changeEmail,
       },
       "/user/profile": {
         get: getProfile,

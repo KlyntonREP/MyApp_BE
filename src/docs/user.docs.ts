@@ -855,6 +855,233 @@ const updateProfile = {
   },
 };
 
+const editEmail = {
+  tags: ["Users"],
+  description:
+    "In the update profile, when changing your email. The user will be required to input an OTP",
+  operationId: "editEmail",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            email: {
+              description: "User's Email Address",
+              type: "string",
+              example: "JohnDoe@gmail.com",
+            },
+          },
+        },
+      },
+    },
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "Email Change Code Sent Successfully",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Email Change Code Sent Successfully",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Error Sending Email",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Sending Email",
+              },
+            },
+          },
+        },
+      },
+    },
+    "401": {
+      description: "This Email Address Does Not Exist On Your Account",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "This Email Address Does Not Exist On Your Account",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User Not Found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Not Found",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const changeEmail = {
+  tags: ["Users"],
+  description:
+    "Change the user email",
+  operationId: "changeEmail",
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            otp: {
+              description: "Otp sent to user email",
+              type: "string",
+              example: "123456",
+            },
+            email: {
+              description: "User's Email Address",
+              type: "string",
+              example: "JohnDoe@gmail.com",
+            },
+          },
+        },
+      },
+    },
+    required: true,
+  },
+  responses: {
+    "200": {
+      description: "Email Changed Successfully",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Email Changed Successfully",
+              },
+            },
+          },
+        },
+      },
+    },
+    "400": {
+      description: "Code Has Expired Please Request For A New One",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Code Has Expired Please Request For A New One",
+              },
+            },
+          },
+        },
+      },
+    },
+    "401": {
+      description: "Invalid OTP",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid OTP",
+              },
+            },
+          },
+        },
+      },
+    },
+    "404": {
+      description: "User Not Found",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User Not Found",
+              },
+            },
+          },
+        },
+      },
+    },
+    "500": {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error Reseting Password",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 const getProfile = {
   tags: ["Users"],
   description:
@@ -1266,6 +1493,8 @@ export {
   forgotPassPhone,
   resetPass,
   updateProfile,
+  editEmail,
+  changeEmail,
   getProfile,
   getUserById,
   followUser,
