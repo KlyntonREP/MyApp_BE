@@ -31,7 +31,7 @@ interface OtpDoc extends Document {
     
   },{ timestamps: true });
 
-  OtpSchema.index({createdAt: 1},{expireAfterSeconds: 300});
+  OtpSchema.index({createdAt: 1},{expireAfterSeconds: 600});
 
   const OtpModel = mongoose.model<OtpDoc>("Otp", OtpSchema);
   

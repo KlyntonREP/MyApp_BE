@@ -10,8 +10,11 @@ import {  createUserService,
     unfollowService,
     updateProfileService,
     getProfileService,
-    getUserByIdService
+    getUserByIdService,
+    editEmailService,
+    changeEmailService
 } from "../services/index";
+import { IChangeEmail } from '../dto';
 
 
 /**
@@ -176,6 +179,49 @@ export const updateProfilerController = async(req: Request, res: Response) => {
 }
 
 /**
+ * @description Edit Email Address
+ * @method POST
+ * @route /api/user/edit-email
+ * @access public
+ */
+export const editEmailController = async(req: Request, res: Response) => {
+    try{
+        const user: string = await req.user.id;
+        const response: any = await editEmailService(user, req.body);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        }); 
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+/**
+ * @description Change Email Address
+ * @method PUT
+ * @route /api/user/change-email
+ * @access public
+ */
+export const changeEmailController = async(req: Request, res: Response) => {
+    try{
+        const user: string = await req.user.id;
+        const payload = <IChangeEmail>req.body
+        const response: any = await changeEmailService(user, payload);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        }); 
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+/**
  * @description Get Profile
  * @method GET
  * @route /api/user/profile
@@ -194,7 +240,6 @@ export const getProfileController = async(req: Request, res: Response) => {
         res.status(500).json({message: error.message});
     }
 }
-
 
 /**
  * @description Get User By Id

@@ -65,4 +65,13 @@ export interface IEditProfile{
   phoneNumber?: string;
 }
 
+export interface IEditEmail{
+  email: string;
+}
+
+export interface IChangeEmail{
+  otp: string;
+  email: string;
+}
+
 export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>
