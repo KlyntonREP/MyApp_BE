@@ -5,6 +5,8 @@ import log from "./logger";
 import { OtpModel } from "../models";
 import bcrypt from 'bcryptjs';
 
+
+//Random code generator
 export const GenCode = async () => {
     return otpGenerator.generate(6, {
         digits: true,
@@ -14,6 +16,8 @@ export const GenCode = async () => {
     });
 };
 
+
+//Mailer helper
 export const transport = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -49,7 +53,8 @@ export const sendMail = async (
     }
   };
 
- 
+
+// Otp generator helper
 export const generateAndStoreOTP = async(userEmail:string) => {
   try {
     const findOtp = await OtpModel.findOne({ userEmail });

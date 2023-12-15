@@ -8,6 +8,8 @@ import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import { options } from "../docs/swagger";
 import userRoutes from "../routes/user.route"
+import http from "http"
+import createWebSocketServer from "../wsServer"
 
 export default async (app: Application) => {
   app.use(express.json());
@@ -15,6 +17,10 @@ export default async (app: Application) => {
 
   //set cross origin resource sharing
   app.use(cors());
+
+  //This block of code we are setting our socket io server
+  const wsServer = http.createServer(app);
+  createWebSocketServer(wsServer);
 
   // Sanitize data
   app.use(mongoSanitize());

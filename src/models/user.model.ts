@@ -13,6 +13,9 @@ interface UserDoc extends Document {
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
     status: string;
+    currentSocketId?: string;
+    accessToken: string;
+    refreshToken: string;
     followers: string[];
     following: string[];
   }
@@ -83,6 +86,17 @@ interface UserDoc extends Document {
     following:{
       type: [String],
       default:[]
+    },
+    currentSocketId: {
+      type: String,
+    },
+    accessToken: {
+      type: String,
+      // required: true
+    },
+    refreshToken: {
+      type: String,
+      // required: true
     },
   },{ timestamps: true });
 

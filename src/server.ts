@@ -5,10 +5,11 @@ import ExpressApp from './utility/ExpressApp';
 import connectDB from './config/db';
 import dotenv from 'dotenv';
 
+dotenv.config();
+
 const StartServer = async () => {
   
   const app = express();
-  dotenv.config();
 
   await ExpressApp(app);
 
