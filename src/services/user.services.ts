@@ -172,6 +172,14 @@ export const UserLoginService = async (payload: IUserLogin ) => {
     };
 };
 
+// export const googleAuthService = async() => {
+//     try{
+        
+//     }catch(error) {
+//         return{status: 500, message:"Internal Server Error"}
+//     }
+// }
+
 export const forgotPassEmailService = async(payload: IUserForgotPassEmail) => {
     try{
         const { email } = payload;

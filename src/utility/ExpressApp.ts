@@ -10,6 +10,9 @@ import { options } from "../docs/swagger";
 import userRoutes from "../routes/user.route"
 import http from "http"
 import createWebSocketServer from "../wsServer"
+import passport from 'passport';
+import './passport';
+import session from 'express-session';
 
 export default async (app: Application) => {
   app.use(express.json());
@@ -39,8 +42,18 @@ export default async (app: Application) => {
     res.sendStatus(200);
   });
 
+  app.use(session({
+    secret: 'somethingsecretgoeshere',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+ }));
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   //   declaring the routes
-  app.use("/api/user", userRoutes);
+  app.use("", userRoutes);
 
   // Error handler
   app.use(notFound);

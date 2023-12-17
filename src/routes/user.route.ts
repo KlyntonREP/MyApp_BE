@@ -18,6 +18,7 @@ import {
 import { Authenticate } from '../middlewares/auth.middleware';
 import validate from '../middlewares/validateResource';
 import { UserRegisterInputSchema } from '../dto';
+import passport from 'passport';
 
 const router = express.Router();
 
@@ -35,4 +36,21 @@ router.get('/profile', Authenticate, getProfileController);
 router.get('/profile/:userId', Authenticate, getUserByIdController)
 router.post('/follow/:followId', Authenticate, followController);
 router.post('/unfollow/:unfollowId', Authenticate, unfollowController);
+router.get('/google', passport.authenticate('google', {
+  scope: ['email', 'profile']
+}))
+router.get('/google/callback',
+    passport.authenticate('google', {
+      failureRedirect: '/failed',
+}),function (req, res) {
+  res.redirect('/success')
+
+})
+
+router.get('/success', (req, res) => {
+  res.send('Success!')
+})
+router.get('/failed', (req, res) => {
+  res.send('Something went wrong')
+})
 export default router;
