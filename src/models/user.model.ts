@@ -18,6 +18,7 @@ interface UserDoc extends Document {
     refreshToken: string;
     followers: string[];
     following: string[];
+    posts: string[];
   }
 
   const UserSchema: Schema = new mongoose.Schema<UserDoc>({
@@ -84,6 +85,10 @@ interface UserDoc extends Document {
       default:[]
     },
     following:{
+      type: [String],
+      default:[]
+    },
+    posts:{
       type: [String],
       default:[]
     },

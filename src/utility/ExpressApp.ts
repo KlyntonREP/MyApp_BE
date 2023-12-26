@@ -53,7 +53,7 @@ export default async (app: Application) => {
   app.use(passport.session());
 
   //   declaring the routes
-  app.use("", userRoutes);
+  app.use("/api/user", userRoutes);
 
   // Error handler
   app.use(notFound);

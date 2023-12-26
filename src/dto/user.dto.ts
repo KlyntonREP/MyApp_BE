@@ -74,4 +74,8 @@ export interface IChangeEmail{
   email: string;
 }
 
+export interface ICreatePost{
+  caption: string;
+}
+
 export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>

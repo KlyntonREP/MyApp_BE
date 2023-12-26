@@ -12,9 +12,10 @@ import {  createUserService,
     getProfileService,
     getUserByIdService,
     editEmailService,
-    changeEmailService
+    changeEmailService,
+    createPostService
 } from "../services/index";
-import { IChangeEmail } from '../dto';
+import { IChangeEmail, ICreatePost } from '../dto';
 
 
 /**
@@ -208,7 +209,7 @@ export const editEmailController = async(req: Request, res: Response) => {
 export const changeEmailController = async(req: Request, res: Response) => {
     try{
         const user: string = await req.user.id;
-        const payload = <IChangeEmail>req.body
+        const payload = <IChangeEmail>req.body;
         const response: any = await changeEmailService(user, payload);
         return res.status(response.status).json({
             status: response.status, 
@@ -292,7 +293,7 @@ export const followController =  async(req: Request, res: Response) => {
 
 export const unfollowController =  async(req: Request, res: Response) => {
     try{
-        const user: string = await req.user.id
+        const user: string = await req.user.id;
         const { unfollowId: unfollowId } = req.params;
         const response: any = await unfollowService(user, unfollowId);
         return res.status(response.status).json({
@@ -304,5 +305,27 @@ export const unfollowController =  async(req: Request, res: Response) => {
         console.log(error);
         res.status(500).json({message: error.message});
     }
-    
+}
+
+/**
+ * @description Create A Post
+ * @method POST
+ * @route /api/user/create-post/:userId
+ * @access public
+ */
+export const createpostController = async(req: Request, res:Response) => {
+    try{
+        const payload = <ICreatePost>req.body
+        const user: string = await req.user.id;
+        const file = req.files as { [fieldname: string]: Express.Multer.File[] };
+        const response: any = await createPostService(payload, user, file);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
 }
