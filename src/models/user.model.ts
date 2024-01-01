@@ -13,8 +13,12 @@ interface UserDoc extends Document {
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
     status: string;
+    currentSocketId?: string;
+    accessToken: string;
+    refreshToken: string;
     followers: string[];
     following: string[];
+    posts: string[];
   }
 
   const UserSchema: Schema = new mongoose.Schema<UserDoc>({
@@ -83,6 +87,21 @@ interface UserDoc extends Document {
     following:{
       type: [String],
       default:[]
+    },
+    posts:{
+      type: [String],
+      default:[]
+    },
+    currentSocketId: {
+      type: String,
+    },
+    accessToken: {
+      type: String,
+      // required: true
+    },
+    refreshToken: {
+      type: String,
+      // required: true
     },
   },{ timestamps: true });
 

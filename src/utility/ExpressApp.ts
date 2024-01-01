@@ -7,14 +7,27 @@ import hpp from "hpp";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import { options } from "../docs/swagger";
-import userRoutes from "../routes/user.route"
+import { userRoutes, postRoutes} from "../routes/index";
+import http from "http"
+import createWebSocketServer from "../wsServer"
+import passport from 'passport';
+import './passport';
+import session from 'express-session';
 
-export default async (app: Application) => {
+
+export default (app: Application) => {
+
+  //This block of code we are setting our socket io server
+  const wsServer = http.createServer(app);
+  createWebSocketServer(wsServer);
+
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
   //set cross origin resource sharing
   app.use(cors());
+
 
   // Sanitize data
   app.use(mongoSanitize());
@@ -33,12 +46,23 @@ export default async (app: Application) => {
     res.sendStatus(200);
   });
 
+  app.use(session({
+    secret: 'somethingsecretgoeshere',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+ }));
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   //   declaring the routes
   app.use("/api/user", userRoutes);
+  app.use("/api/post", postRoutes);
 
   // Error handler
   app.use(notFound);
   app.use(errorHandler);
 
-  return app;
+  return wsServer;
 };
