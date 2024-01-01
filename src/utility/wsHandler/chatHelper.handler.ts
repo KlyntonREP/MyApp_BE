@@ -18,7 +18,7 @@ export const updateAndgetUserMessages = async ({
     connectionType: ConnectionTypeEnum;
     socket: io.Socket;
   }) => {
-    await UserModel.findOneAndUpdate({ userId },
+    await UserModel.findOneAndUpdate({ _id: userId },
       {
         currentSocketId: userSocketId,
         status: StatusEnum.ONLINE,

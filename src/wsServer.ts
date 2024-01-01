@@ -19,12 +19,16 @@ const authMiddleware = async (socket: io.Socket, next:  (err?: ApiError) => void
   // const uniqueId = socket.handshake.query?.uniqueId as string;
   const counterpartyId = socket.handshake.query?.counterpartyId as string;
   const connectionType = socket.handshake.query?.connectionType as unknown as ConnectionTypeEnum;
+  console.log(token)
+  console.log(counterpartyId)
+  console.log(connectionType)
 
   if (!token) {
-      const error = new ApiError('Unauthorized');
-      error.data = { content: 'Please reconnect with a valid token' };
-      next(error);
-      return;
+    
+    const error = new ApiError('Unauthorized');
+    error.data = { content: 'Please reconnect with a valid token' };
+    next(error);
+    return;
   }
     console.log(token)
     const payload = await verifyAuthTokens(token);

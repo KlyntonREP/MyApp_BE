@@ -17,6 +17,12 @@ import {
   changeEmail,
 } from "./user.docs";
 
+import{
+  createPostBody,
+  createPost,
+  getPosts
+}from "./post.docs"
+
 //options object for swaggerjs
 export const options = {
   definition: {
@@ -28,6 +34,7 @@ export const options = {
     },
     paths: {
     //   routes for the swagger docs goes here
+
     // for user
       "/user/register": {
         post: createUser,
@@ -71,6 +78,15 @@ export const options = {
       "/user/unfollow/{unfollowId}": {
         post: unfollowUser,
       },
+
+      //for posts
+      "/post/create-post": {
+        post: createPost,
+      },
+      "/post/get-posts": {
+        get: getPosts,
+      }
+
     },
     components: {
       securitySchemes: {
@@ -82,6 +98,7 @@ export const options = {
       },
       schemas: {
         createUserBody,
+        createPostBody,
       },
     },
     servers: [
@@ -93,6 +110,9 @@ export const options = {
     tags: [
       {
         name: "Users",
+      },
+      {
+        name: "Posts",
       },
     ],
   },

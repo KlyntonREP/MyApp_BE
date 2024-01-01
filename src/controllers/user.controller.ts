@@ -13,7 +13,8 @@ import {  createUserService,
     getUserByIdService,
     editEmailService,
     changeEmailService,
-    createPostService
+    createPostService,
+    homepageService
 } from "../services/index";
 import { IChangeEmail, ICreatePost } from '../dto';
 
@@ -246,7 +247,7 @@ export const getProfileController = async(req: Request, res: Response) => {
  * @description Get User By Id
  * @method GET
  * @route /api/user/profile/:userId
- * @access public
+ * @access private
  */
 export const getUserByIdController = async(req: Request, res: Response) => {
     try{
@@ -266,7 +267,7 @@ export const getUserByIdController = async(req: Request, res: Response) => {
  * @description Follow A User
  * @method POST
  * @route /api/user/follow/:followId
- * @access public
+ * @access private
  */
 export const followController =  async(req: Request, res: Response) => {
     try{
@@ -288,7 +289,7 @@ export const followController =  async(req: Request, res: Response) => {
  * @description Unfollow A User
  * @method POST
  * @route /api/user/unfollow/:unfollowId
- * @access public
+ * @access private
  */
 
 export const unfollowController =  async(req: Request, res: Response) => {
@@ -311,7 +312,7 @@ export const unfollowController =  async(req: Request, res: Response) => {
  * @description Create A Post
  * @method POST
  * @route /api/user/create-post/:userId
- * @access public
+ * @access private
  */
 export const createpostController = async(req: Request, res:Response) => {
     try{
@@ -319,6 +320,27 @@ export const createpostController = async(req: Request, res:Response) => {
         const user: string = await req.user.id;
         const file = req.files as { [fieldname: string]: Express.Multer.File[] };
         const response: any = await createPostService(payload, user, file);
+        return res.status(response.status).json({
+            status: response.status, 
+            message: response.message, 
+            data: response.data
+        });
+    }catch(error: any){
+        console.log(error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+/**
+ * @description Get Posts On The Home Page
+ * @method GET
+ * @route /api/user/get-posts
+ * @access private
+ */
+export const getHomePageController = async(req: Request, res:Response) => {
+    try{
+        const user: string = await req.user.id;
+        const response: any = await homepageService( user );
         return res.status(response.status).json({
             status: response.status, 
             message: response.message, 

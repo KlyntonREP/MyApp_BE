@@ -11,16 +11,20 @@ const StartServer = async () => {
   
   const app = express();
 
-  await ExpressApp(app);
+  await connectDB();
+
+  const wsResult = ExpressApp(app);
 
   const PORT = process.env.PORT || 1335;
 
-  await connectDB();
-
-  app.listen(PORT, () => {
+  wsResult.listen(PORT, () => {
     log.info(`Server listening on: http://localhost:${PORT}`);
     log.info(`Swagger doc listening on: http://localhost:${PORT}/api/docs`);
   });
+
+  //This block of code we are setting our socket io server
+  // const wsServer = http.createServer(app);
+  // createWebSocketServer(wsServer);
 };
 
 StartServer();

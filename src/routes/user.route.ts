@@ -20,7 +20,6 @@ import { Authenticate } from '../middlewares/auth.middleware';
 import validate from '../middlewares/validateResource';
 import { UserRegisterInputSchema } from '../dto';
 import passport from 'passport';
-import { upload } from "../utility/multer";
 
 const router = express.Router();
 
@@ -38,7 +37,6 @@ router.get('/profile', Authenticate, getProfileController);
 router.get('/profile/:userId', Authenticate, getUserByIdController)
 router.post('/follow/:followId', Authenticate, followController);
 router.post('/unfollow/:unfollowId', Authenticate, unfollowController);
-router.post('/create-post', Authenticate, upload.fields([{ name: "image" }, { name: "video" }]), createpostController);
 router.get('/google', passport.authenticate('google', {
   scope: ['email', 'profile']
 }))

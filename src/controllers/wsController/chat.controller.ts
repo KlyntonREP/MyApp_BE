@@ -19,11 +19,11 @@ export const sendUserUserMessage = async (socket: io.Socket, payload: SendUserUs
 
   const receiver: any = await UserModel.findOne({ userType: payload.receiverType, userId: payload.receiverId });
 
+  if (!receiver) await UserModel.create({ userId: payload.receiverId, userType: payload.receiverType, status: StatusEnum.OFFLINE });
+
   if (receiver && receiver.status === StatusEnum.ONLINE) {
     socket.to(receiver.currentSocketId).emit('message:receive:user:user', { ...payload });
   }
-
-  if (!receiver) await UserModel.create({ userId: payload.receiverId, userType: payload.receiverType, status: StatusEnum.OFFLINE });
 
   socket.emit('message:sent', { ...payload });
 };
