@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { IAuthPayload } from "../dto/index";
 import { ValidateJwt } from "../utility/jwtUtility";
-import asyncHandler from "express-async-handler";
 
 declare global {
   namespace Express {
@@ -18,7 +16,7 @@ export const Authenticate = async ( req: Request, res: Response, next: NextFunct
     next();
   } else {
     return res.status(400).json({
-      message: "User not Authenticated",
+      message: "User Not Authorized",
     });
   }
 };

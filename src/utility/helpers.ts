@@ -5,6 +5,13 @@ import log from "./logger";
 import { OtpModel } from "../models";
 import bcrypt from 'bcryptjs';
 
+// this fuction generates a randow string of length === 32
+export function generateReference(length = 32, chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+  let result = '';
+  for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+  return result;
+}
+
 
 //Random code generator
 export const GenCode = async () => {
@@ -41,7 +48,7 @@ export const sendMail = async (
         subject,
         html: message,
       };
-      return await transport.sendMail(mailOptions, (error, info) => {
+      return transport.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.log("Error occurred while sending email:", error);
         } else {

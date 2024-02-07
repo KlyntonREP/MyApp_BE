@@ -5,7 +5,7 @@ import { IUser } from "../common/types";
 
 // verifying authorization token and storing it in the req.user
 export const ValidateJwt = async (req: Request) => {
-  const signature = req.get("Authorization");
+  const signature = req.header("Authorization");
 
   if (signature) {
     const payload = jwt.verify(
@@ -16,14 +16,12 @@ export const ValidateJwt = async (req: Request) => {
 
     return true;
   }
-
   return false;
 };
 
 //generating a random token for jwt
 const genToken = async(data: any) => {
-    let token
-    token = jwt.sign(
+   const token = jwt.sign(
         { ...data,}, process.env.JWT_SECRET as string, {expiresIn: process.env.JWT_EXPIRE}
     );
     return token
@@ -45,7 +43,7 @@ export const verifyAuthTokens = async (token: string) => {
 
     return payload;
   } catch (error) {
-    console.log("verify token error: ",error);
+    console.log("verify token error: ", error);
     return {
       error: new ApiError('Error verifying auth tokens', error as Error),
     };

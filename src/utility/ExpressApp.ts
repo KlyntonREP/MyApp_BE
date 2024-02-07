@@ -7,20 +7,13 @@ import hpp from "hpp";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import { options } from "../docs/swagger";
-import { userRoutes, postRoutes} from "../routes/index";
-import http from "http"
-import createWebSocketServer from "../wsServer"
+import { userRoutes, postRoutes, socialRoutes, chatRoutes } from "../routes/index";
 import passport from 'passport';
 import './passport';
 import session from 'express-session';
 
 
-export default (app: Application) => {
-
-  //This block of code we are setting our socket io server
-  const wsServer = http.createServer(app);
-  createWebSocketServer(wsServer);
-
+export default async (app: Application) => {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -57,12 +50,14 @@ export default (app: Application) => {
   app.use(passport.session());
 
   //   declaring the routes
+  app.use("/", socialRoutes);
   app.use("/api/user", userRoutes);
   app.use("/api/post", postRoutes);
+  app.use("/api/chat", chatRoutes);
 
   // Error handler
   app.use(notFound);
   app.use(errorHandler);
 
-  return wsServer;
+  return app;
 };

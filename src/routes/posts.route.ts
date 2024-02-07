@@ -4,7 +4,7 @@ import {
     getHomePageController 
 } from '../controllers/index';
 import { Authenticate } from '../middlewares/auth.middleware';
-import validate from '../middlewares/validateResource';
+// import validate from '../middlewares/validateResource';
 import { upload } from "../utility/multer";
 
 const router = express.Router();

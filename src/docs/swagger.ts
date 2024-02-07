@@ -23,6 +23,14 @@ import{
   getPosts
 }from "./post.docs"
 
+import{
+  createChatBody,
+  createChat,
+  getUserChats,
+  getUsersChat,
+  sendMessage,
+  getMessages
+}from "./chat.docs"
 //options object for swaggerjs
 export const options = {
   definition: {
@@ -85,8 +93,25 @@ export const options = {
       },
       "/post/get-posts": {
         get: getPosts,
-      }
+      },
 
+
+      //for chats
+      "/chats/create-chat/{counterpartyId}":{
+        post: createChat,
+      },
+      "/chats/user-chats":{
+        get: getUserChats
+      },
+      "/chats/users-chat/{counterPartyId}":{
+        get: getUsersChat
+      },
+      "/chats/send-message":{
+        post: sendMessage
+      },
+      "/chats/get-messages/{chatId}":{
+        get: getMessages
+      }
     },
     components: {
       securitySchemes: {
@@ -99,6 +124,7 @@ export const options = {
       schemas: {
         createUserBody,
         createPostBody,
+        createChatBody,
       },
     },
     servers: [
@@ -113,6 +139,9 @@ export const options = {
       },
       {
         name: "Posts",
+      },
+      {
+        name: "Chats",
       },
     ],
   },
