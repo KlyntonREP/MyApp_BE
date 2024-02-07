@@ -13,10 +13,8 @@ import {  createUserService,
     getUserByIdService,
     editEmailService,
     changeEmailService,
-    createPostService,
-    homepageService
 } from "../services/index";
-import { IChangeEmail, ICreatePost } from '../dto';
+import { IChangeEmail, IEditProfile, IEditEmail } from '../dto';
 
 
 /**
@@ -168,7 +166,8 @@ export const resetPassController =  async(req: Request, res: Response) => {
 export const updateProfilerController = async(req: Request, res: Response) => {
     try{
         const user: string = await req.user.id;
-        const response: any = await updateProfileService(user, req.body);
+        const payload = <IEditProfile>req.body;
+        const response: any = await updateProfileService(user, payload);
         return res.status(response.status).json({
             status: response.status, 
             message: response.message, 
@@ -189,6 +188,7 @@ export const updateProfilerController = async(req: Request, res: Response) => {
 export const editEmailController = async(req: Request, res: Response) => {
     try{
         const user: string = await req.user.id;
+        const payload = <IEditEmail>req.body;
         const response: any = await editEmailService(user, req.body);
         return res.status(response.status).json({
             status: response.status, 
@@ -209,7 +209,7 @@ export const editEmailController = async(req: Request, res: Response) => {
  */
 export const changeEmailController = async(req: Request, res: Response) => {
     try{
-        const user: string = await req.user.id;
+        const user: string = await req.user._id;
         const payload = <IChangeEmail>req.body;
         const response: any = await changeEmailService(user, payload);
         return res.status(response.status).json({
@@ -297,50 +297,6 @@ export const unfollowController =  async(req: Request, res: Response) => {
         const user: string = await req.user.id;
         const { unfollowId: unfollowId } = req.params;
         const response: any = await unfollowService(user, unfollowId);
-        return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
-            data: response.data
-        });
-    }catch(error: any){
-        console.log(error);
-        res.status(500).json({message: error.message});
-    }
-}
-
-/**
- * @description Create A Post
- * @method POST
- * @route /api/user/create-post/:userId
- * @access private
- */
-export const createpostController = async(req: Request, res:Response) => {
-    try{
-        const payload = <ICreatePost>req.body
-        const user: string = await req.user.id;
-        const file = req.files as { [fieldname: string]: Express.Multer.File[] };
-        const response: any = await createPostService(payload, user, file);
-        return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
-            data: response.data
-        });
-    }catch(error: any){
-        console.log(error);
-        res.status(500).json({message: error.message});
-    }
-}
-
-/**
- * @description Get Posts On The Home Page
- * @method GET
- * @route /api/user/get-posts
- * @access private
- */
-export const getHomePageController = async(req: Request, res:Response) => {
-    try{
-        const user: string = await req.user.id;
-        const response: any = await homepageService( user );
         return res.status(response.status).json({
             status: response.status, 
             message: response.message, 

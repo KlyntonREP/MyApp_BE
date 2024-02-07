@@ -2,14 +2,14 @@ import mongoose, {Schema} from "mongoose";
 import UserModel from "./user.model";
 import MessageModel from "./messages.model";
 
-interface RoomDoc extends Document {
+interface ChatDoc extends Document {
     users: typeof UserModel[];
     messages: typeof MessageModel[]
     isGroup: boolean;
     lastUpdatedAt: Date;
 }
 
-  const RoomSchema: Schema = new mongoose.Schema<RoomDoc>({
+  const ChatSchema: Schema = new mongoose.Schema<ChatDoc>({
     users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     messages: [{ type: Schema.Types.ObjectId, ref: 'Message'}],
     isGroup: {
@@ -22,7 +22,7 @@ interface RoomDoc extends Document {
     }
   },{ timestamps: true });
 
-  RoomSchema.pre('save', function(next){
+  ChatSchema.pre('save', function(next){
     if(this.isGroup){
         if(this.user.length > +(process.env.MAX_GROUP_NUMBER as string)){
             next(new Error(`Maximum Number Of Users In A Group Must Not Exceed ${process.env.MAX_GROUP_NUMBER}`));
@@ -35,6 +35,6 @@ interface RoomDoc extends Document {
     next()
   })
 
-const RoomModel = mongoose.model<RoomDoc>("Room", RoomSchema);
+const ChatModel = mongoose.model<ChatDoc>("Chat", ChatSchema);
   
-export default RoomModel;
+export default ChatModel;

@@ -1,9 +1,19 @@
-import {
-    sendUserUserMessage,
-} from '../controllers/wsController/chat.controller'
-import io from 'socket.io';
+import express from 'express';
+import { Authenticate } from '../middlewares/auth.middleware';
+import { createChatController, getMessagesController, getUserChatsController, getUsersChatController, sendMessageController } from '../controllers/chat.controller';
 
-export default function chatHandler(socket: io.Socket) {
-    // ! Validate all user inputs (payloads)
-    socket.on('send:message:user:user', (payload: any) => sendUserUserMessage(socket, payload));
-}
+
+const router = express.Router();
+//initiate a chat
+router.post('/create-chat/:counterPartyId', Authenticate, createChatController)
+
+//gets all the chats of a logged in user
+router.get('/user-chats', Authenticate, getUserChatsController);
+
+//gets the chat between a logged in user and another user
+router.get('/users-chat/counterPartyId', Authenticate, getUsersChatController);
+
+router.post('/send-message', Authenticate, sendMessageController)
+router.get('/get-messages/:chatId', Authenticate, getMessagesController)
+
+export default router;

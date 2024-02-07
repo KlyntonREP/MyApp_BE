@@ -92,9 +92,6 @@ interface UserDoc extends Document {
       type: [String],
       default:[]
     },
-    currentSocketId: {
-      type: String,
-    },
     accessToken: {
       type: String,
       // required: true
