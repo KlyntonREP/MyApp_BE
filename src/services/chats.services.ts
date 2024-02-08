@@ -84,3 +84,11 @@ export const getMessagesService = async(chatId: string)  => {
         return{status: 500, message: "Internal Server Error", data: error}
     }
 }
+
+export const createGroupService = async(payload: any ) => {
+    try{
+        
+    }catch(error){
+        return{status: 500, message: "Internal Server Error", data: error}
+    }
+}
