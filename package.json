@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "build": "tsc --build && tsc-alias",
+    "build": "tsc",
     "start": "node build/server.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\"" 
   },
