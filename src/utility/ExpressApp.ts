@@ -8,8 +8,6 @@ import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import { options } from "../docs/swagger";
 import { userRoutes, postRoutes, socialRoutes, chatRoutes } from "../routes/index";
-import passport from 'passport';
-import './passport';
 import session from 'express-session';
 
 
@@ -46,8 +44,6 @@ export default async (app: Application) => {
     cookie: { secure: true }
  }));
 
-  app.use(passport.initialize());
-  app.use(passport.session());
 
   //   declaring the routes
   app.use("/", socialRoutes);
