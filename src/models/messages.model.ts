@@ -1,12 +1,13 @@
 import mongoose, { Schema } from 'mongoose';
 import ChatModel from './chat.model';
+import UserModel from './user.model';
 
 
 interface MessageDoc extends Document {
     text: string;
     chatId: typeof ChatModel[];
     senderId: string;
-    receiverId: string;
+    receiverId: typeof UserModel[];
     isMedia: boolean;
     media: string;
     mediaType: string;
@@ -27,10 +28,10 @@ const messageSchema = new Schema<MessageDoc>({
     type: String,
     index: true,
   },
-  receiverId: {
-    type: String,
-    index: true,
-  },
+  receiverId: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
   isMedia: {
     type: Boolean,
     default: false,

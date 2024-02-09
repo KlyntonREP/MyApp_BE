@@ -4,7 +4,7 @@ import { ValidateJwt } from "../utility/jwtUtility";
 declare global {
   namespace Express {
     interface Request{
-      user?: any;
+      loggedInUser?: any;
     }
   }
 }

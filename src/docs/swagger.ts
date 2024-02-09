@@ -29,7 +29,8 @@ import{
   getUserChats,
   getUsersChat,
   sendMessage,
-  getMessages
+  getMessages,
+  createGroup
 }from "./chat.docs"
 //options object for swaggerjs
 export const options = {
@@ -111,6 +112,9 @@ export const options = {
       },
       "/chats/get-messages/{chatId}":{
         get: getMessages
+      },
+      "/chats/create-group":{
+        post: createGroup
       }
     },
     components: {

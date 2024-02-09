@@ -6,7 +6,7 @@ interface ChatDoc extends Document {
     users: typeof UserModel[];
     messages: typeof MessageModel[]
     isGroup: boolean;
-    lastUpdatedAt: Date;
+    groupName?: string;
 }
 
   const ChatSchema: Schema = new mongoose.Schema<ChatDoc>({
@@ -16,10 +16,9 @@ interface ChatDoc extends Document {
       type: Boolean,
       default: false
     },
-    lastUpdatedAt: {
-      type: Date,
-      default: new Date()
-    }
+    groupName: {
+      type: String,
+    },
   },{ timestamps: true });
 
   ChatSchema.pre('save', function(next){

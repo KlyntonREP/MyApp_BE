@@ -255,8 +255,8 @@ const getUsersChat = {
               },
             },
         },
-        "401": {
-            description: "This User Chat Does Not Exist",
+        "200": {
+            description: "Group Message Sent Successfully",
             content: {
               "application/json": {
                 schema: {
@@ -264,7 +264,7 @@ const getUsersChat = {
                   properties: {
                     msg: {
                       type: "string",
-                      example: "This User Chat Does Not Exist",
+                      example: "Group Message Sent Successfully",
                     },
                   },
                 },
@@ -272,19 +272,19 @@ const getUsersChat = {
             },
         },
         "404": {
-            description: "User Not Found",
+            description: "Chat Does Not Exist",
             content: {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            message: {
-                                type: "string",
-                                example: "User Not Found",
-                            },
-                        },
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    msg: {
+                      type: "string",
+                      example: "Chat Does Not Exist",
                     },
+                  },
                 },
+              },
             },
         },
         "500": {
@@ -379,6 +379,82 @@ const getMessages = {
     },
   };
 
+  const createGroup = {
+    tags: ["Chats"],
+    description: "Create group",
+    operationId: "createGroup",
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    responses: {
+        "201": {
+            description: "Group Created Successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    msg: {
+                      type: "string",
+                      example: "Group Created Successfully",
+                    },
+                  },
+                },
+              },
+            },
+        },
+        "401": {
+            description: "Group Members Cannot Be More Than 10",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    msg: {
+                      type: "string",
+                      example: "Group Members Cannot Be More Than 10",
+                    },
+                  },
+                },
+              },
+            },
+        },
+        "404": {
+            description: "Cannot Create Group, Please Try Again",
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            message: {
+                                type: "string",
+                                example: "Cannot Create Group, Please Try Again",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "500": {
+            description: "Internal Server Error",
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            error: {
+                                type: "string",
+                                example: "Internal server error",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+};
 
 const createChatBody = {
     type: "object",
@@ -424,5 +500,6 @@ export{
     getUserChats,
     getUsersChat,
     sendMessage,
-    getMessages
+    getMessages,
+    createGroup
 }

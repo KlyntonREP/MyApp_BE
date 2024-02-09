@@ -1,4 +1,4 @@
-import { ICreateChat, ISendMessage } from "../dto/chat.dto";
+import { ICreateChat, ICreateGroup, ISendMessage } from "../dto/chat.dto";
 import { ChatModel, UserModel, MessageModel } from "../models";
 
 export const createChatService = async(payload: ISendMessage, userId: string, counterPartyId: string) => {
@@ -54,21 +54,24 @@ export const getUsersChatService = async(userId: string, counterPartyId: string)
 
 export const sendMessageService = async(payload: ISendMessage) => {
     try{
-        const receiver = await UserModel.findById(payload.receiverId);
-        if(!receiver) return{status:404, message: "User Not Found"};
-
-        //TO DO: include chatId in the payload
-       const newMessage =  await MessageModel.create({ ...payload, messageType: 'user:user' });
-
-       const chatExists = await ChatModel.findOne({ users: {$all: [payload.receiverId, payload.senderId]}})
-
-        if(!chatExists) return{status:401, message: "This User Chat Does Not Exist"};
-
-        chatExists.messages.push(newMessage.id)
-        await chatExists.save();
-
-        return{status: 200, message: "Message Sent Successfully", data: newMessage}
-
+        const chatExist  = await ChatModel.findById({ id: payload.chatId })
+        if(chatExist){
+            if(payload.isGroup === true){
+                const newMessage =  await MessageModel.create({ ...payload, messageType: 'user:users' });
+                chatExist.messages.push(newMessage.id);
+                await chatExist.save();
+                return{status: 200, message: "Group Message Sent Successfully", data: newMessage}
+            }
+            const chatExists = await ChatModel.findOne({ id: payload.chatId, users: {$all: 
+                [payload.receiverId[0], payload.senderId]}})
+            if(chatExists){
+                const newMessage =  await MessageModel.create({ ...payload, messageType: 'user:user' });
+                chatExists.messages.push(newMessage.id);
+                await chatExists.save();
+                return{status: 201, message: "Message Sent Successfully", data: newMessage}
+            }
+        }
+        return{status:404, message: "Chat Does Not Exist"};
     }catch(error){
         return{status: 500, message: "Internal Server Error", data: error}
     }
@@ -85,9 +88,14 @@ export const getMessagesService = async(chatId: string)  => {
     }
 }
 
-export const createGroupService = async(payload: any ) => {
+export const createGroupService = async(payload: ICreateGroup ) => {
     try{
-        
+        if(payload.isGroup === true){
+            if(payload.users.length > 10) return {status: 401, message: "Group Members Cannot Be More Than 10"}
+                const newgroup = await ChatModel.create({ ...payload })
+                return {status: 200, message: "Group Created Successfully", data: newgroup}
+        }
+        return {status: 404, message: "Cannot Create Group, Please Try Again"}
     }catch(error){
         return{status: 500, message: "Internal Server Error", data: error}
     }
