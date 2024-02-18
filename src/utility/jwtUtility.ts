@@ -1,7 +1,6 @@
 import { Request } from "express";
 import jwt from "jsonwebtoken";
 import { ApiError } from "./apiError";
-import { IUser } from "../common/types";
 
 // verifying authorization token and storing it in the req.user
 export const ValidateJwt = async (req: Request) => {

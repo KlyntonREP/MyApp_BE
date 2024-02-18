@@ -7,7 +7,7 @@ interface PostDoc extends Document {
     videoUrl: string;
   }
 
-  const UserSchema: Schema = new mongoose.Schema<PostDoc>({
+  const PostSchema: Schema = new mongoose.Schema<PostDoc>({
     userId: [{ 
         type: Schema.Types.ObjectId, 
         ref: 'User' 
@@ -27,6 +27,6 @@ interface PostDoc extends Document {
   },{ timestamps: true });
 
   
-  const PostModel = mongoose.model<PostDoc>("Post", UserSchema);
+  const PostModel = mongoose.model<PostDoc>("Post", PostSchema);
   
   export default PostModel;

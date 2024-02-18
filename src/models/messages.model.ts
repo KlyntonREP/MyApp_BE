@@ -18,7 +18,7 @@ interface MessageDoc extends Document {
 }
 
 
-const messageSchema = new Schema<MessageDoc>({
+const MessageSchema = new Schema<MessageDoc>({
   text: String,
   chatId: [{
     type: Schema.Types.ObjectId,
@@ -59,6 +59,6 @@ const messageSchema = new Schema<MessageDoc>({
   }
 },{timestamps: true});
 
-const MessageModel = mongoose.model('Message', messageSchema);
+const MessageModel = mongoose.model('Message', MessageSchema);
 
 export default MessageModel;

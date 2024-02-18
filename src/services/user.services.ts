@@ -42,25 +42,20 @@ export const createUserService = async(payload: IUserRegisterInput["body"]) => {
             phoneNumber: phone,
         });
 
-        const genOtp = await GenCode()
-        const hashOtp = await bcrypt.hash(genOtp,12)
-        const OtModel = await OtpModel.create({
-            otp: hashOtp,
-            userEmail: user.email  
-        })
+        const otp = await generateAndStoreOTP(user.email)
 
         user.password = undefined
         const name = `${user.firstName} ${user.lastName}`;
         const message = `<h1>Email Verification</h1>
         <h2>Hello ${name}</h2>
         <p>Kindly verify your email address to complete the signup and login to your account</br> by inputing the code below.</p>
-        <p>Verification Code: ${genOtp}</p>
+        <p>Verification Code: ${otp}</p>
         <p>This Code expires in 5mins</p>`;
         const subject = "Please Verify Your Email";
 
         await sendMail(name, user?.email, subject, message);
 
-        return {status: 200, message: "Email Sent Successfully", data: user}
+        return {status: 200, message: "Email Sent Successfully, Please Verify You Account Before You Login", data: user}
 
     }catch(error) {
         return{status: 500, message:"Internal Server Error", data: error}
@@ -179,24 +174,13 @@ export const forgotPassEmailService = async(payload: IUserForgotPassEmail) => {
                 message:"User Not Found", 
             };
         }
-        const findOtp: any = await OtpModel.findOne({ userEmail: user.email });
-        const genOtp = await GenCode()
-        const hashOtp = await bcrypt.hash(genOtp, 12);
-        if(findOtp){     
-            findOtp.otp = hashOtp
-            await findOtp.save();
-        }else{
-            const OtModel = await OtpModel.create({
-                otp: hashOtp,
-                userEmail: user.email  
-            })
-        }    
+        const otp = await generateAndStoreOTP(user.email)
 
         const name = `${user?.firstName} ${user?.lastName}`;
         const message = `<h1>Forgot Password</h1>
         <h2>Hello ${user?.firstName} ${user?.lastName }</h2>
         <p>A reset password action wan initiated using your email. If the action was your doing please input the code below.</p>
-        <p>Verification Code: ${genOtp }</p>`;
+        <p>Verification Code: ${otp }</p>`;
         const subject = "Please confirm your account";
 
         await sendMail(name, user?.email, subject, message);
