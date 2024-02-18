@@ -18,7 +18,7 @@ interface MessageDoc extends Document {
 }
 
 
-const MessageSchema = new Schema<MessageDoc>({
+const MessageSchema: Schema = new Schema<MessageDoc>({
   text: String,
   chatId: [{
     type: Schema.Types.ObjectId,

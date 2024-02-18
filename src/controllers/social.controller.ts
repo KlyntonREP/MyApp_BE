@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import {  
+// import { Request, Response, NextFunction } from 'express';
+import {
     // googleAuthService,
 } from "../services/index";
 
@@ -14,8 +14,8 @@ import {
 //     try{
 //         const response: any = await googleAuthService(req, res, next);
 //         // return res.status(response.status).json({
-//         //     status: response.status, 
-//         //     message: response.message, 
+//         //     status: response.status,
+//         //     message: response.message,
 //         //     data: response.data
 //         // });
 //     }catch(error: any){

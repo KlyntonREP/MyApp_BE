@@ -14,7 +14,7 @@ export function generateReference(length = 32, chars = '0123456789ABCDEFGHIJKLMN
 }
 
 
-//Random code generator
+// Random code generator(generates 6 random numbers)
 export const GenCode = async () => {
     return otpGenerator.generate(6, {
         digits: true,
@@ -25,7 +25,7 @@ export const GenCode = async () => {
 };
 
 
-//Mailer helper
+// Mailer helper
 export const transport = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -34,7 +34,7 @@ export const transport = nodemailer.createTransport({
       user: config.AUTH_EMAIL,
       pass: config.AUTH_PASS,
     },
-}); 
+});
 
 export const sendMail = async (
     name: string,
@@ -51,6 +51,7 @@ export const sendMail = async (
       };
       return transport.sendMail(mailOptions, (error, info) => {
         if (error) {
+          console.log(name)
           console.log("Error occurred while sending email:", error);
         } else {
           console.log("Email sent successfully!", info.response);
@@ -62,7 +63,7 @@ export const sendMail = async (
   };
 
 
-// Otp generator helper
+// Otp generator helper(encrypts the generated code and stores in in our db)
 export const generateAndStoreOTP = async(userEmail:string) => {
   try {
     const findOtp = await OtpModel.findOne({ userEmail });
@@ -86,10 +87,12 @@ export const generateAndStoreOTP = async(userEmail:string) => {
   }
 }
 
+
+// cron job to check the database every 1min for expired OTPs and delete them
 cron.schedule('*/1 * * * *', async () => {
   try {
     // Calculate the time 5 minutes ago
-    const fiveMinutesAgo = new Date(Date.now() - 4 * 60 * 1000);
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 
     // Find and delete OTPs created more than 5 minutes ago
     const result = await OtpModel.deleteMany({ updatedAt: { $lt: fiveMinutesAgo } });

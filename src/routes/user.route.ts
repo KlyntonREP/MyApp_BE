@@ -25,8 +25,8 @@ router.post('/register', validate(UserRegisterInputSchema), createUserController
 router.post('/resend-code', resendCodeController);
 router.post('/verify', verifyUserController);
 router.post('/login', UserLoginController);
-router.post('/forgot-password-email', forgotPassEmailController);  
-router.post('/forgot-password-phone', forgotPassPhoneController);  
+router.post('/forgot-password-email', forgotPassEmailController);
+router.post('/forgot-password-phone', forgotPassPhoneController);
 router.post('/reset-password', resetPassController);
 router.put('/update-profile', Authenticate, updateProfilerController);
 router.post('/edit-email', Authenticate, editEmailController);

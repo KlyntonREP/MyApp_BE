@@ -13,9 +13,9 @@ const router = express.Router();
 //   }),function (req, res) {
 //     console.log('Authentication successful:', req.user);
 //     res.redirect('/success')
-  
+
 //   })
-  
+
   router.get('/success', (req, res) => {
     res.send('Success!')
   })

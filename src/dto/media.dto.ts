@@ -26,7 +26,7 @@ export const allowedImageExtensions = [
     ".dicom-rle",
     ".vnd.adobe.photoshop",
   ];
-  
+
   export const allowedVideoExtensions = [
     ".mp4",
     ".mpeg",

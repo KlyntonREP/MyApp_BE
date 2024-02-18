@@ -32,7 +32,7 @@ import{
   getMessages,
   createGroup
 }from "./chat.docs"
-//options object for swaggerjs
+// options object for swaggerjs
 export const options = {
   definition: {
     openapi: "3.0.0",
@@ -88,7 +88,7 @@ export const options = {
         post: unfollowUser,
       },
 
-      //for posts
+      // for posts
       "/post/create-post": {
         post: createPost,
       },
@@ -97,7 +97,7 @@ export const options = {
       },
 
 
-      //for chats
+      // for chats
       "/chats/create-chat/{counterpartyId}":{
         post: createChat,
       },
@@ -133,7 +133,7 @@ export const options = {
     },
     servers: [
       {
-        //update to production url
+        // update to production url
         url: `${config.BASE_URL}/api/`,
       },
     ],

@@ -12,9 +12,9 @@ const accessKeyId = config.AWS_ACCESS_KEY;
 const secretAccessKey = config.AWS_SECRET_KEY;
 
 const s3Client = new AWS.S3({
-  region: region,
-  accessKeyId: accessKeyId,
-  secretAccessKey: secretAccessKey,
+  region,
+  accessKeyId,
+  secretAccessKey,
 });
 
 // generating file url in this block of code
@@ -24,7 +24,7 @@ const generateFileUrl = async (
     contentType: string
   ): Promise<string> => {
     const fileExtension = mimetypes.extension(contentType);
-  
+
     try {
       const url = await new Promise<string>((resolve, reject) => {
         s3Client.getSignedUrl(
@@ -44,11 +44,11 @@ const generateFileUrl = async (
           }
         );
       });
-  
+
       if (!url) {
         throw new Error("Failed to generate file URL");
       }
-  
+
       return url;
     } catch (error) {
       console.error("Error generating file URL:", error);
@@ -65,21 +65,21 @@ export const uploadFile = async (
     try {
       const fileExtension = mimetypes.extension(file.mimetype);
       const fileName = `${file.originalname}.${fileExtension}`;
-  
+
       const fileBuffer = await readFile(file.path); // Read the file asynchronously using promisified fs.readFil
-  
+
       const uploadParams: AWS.S3.PutObjectRequest = {
         Bucket: bucketName as string,
         Key: `${folder}/${fileName}`,
         Body: fileBuffer,
         ContentType: file.mimetype,
       };
-  
+
       const uploadResult = await s3Client.upload(uploadParams).promise();
       if (!uploadResult.Key) {
         throw new Error("Failed to upload file");
       }
-  
+
       const fileUrl = await generateFileUrl(fileName, folder, file.mimetype);
       console.log(fileUrl);
       return fileUrl;
@@ -109,4 +109,4 @@ export const deleteFileFromS3 = async (fileUrl: string) => {
     const urlParts = fileUrl.split("/");
     const fileKey = urlParts[urlParts.length - 1];
     return fileKey;
-  }; 
+  };

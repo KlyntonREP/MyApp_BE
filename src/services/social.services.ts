@@ -11,9 +11,9 @@
 //         console.log(error);
 //         return{status: 500, message: "Internal Server Error", data: error}
 //     }
-    
+
 // }
-  
+
 //   exports.googleCallback = passport.authenticate('google', {
 //     failureRedirect: '/failed'
 //   }, function (req, res) {

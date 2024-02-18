@@ -1,4 +1,4 @@
-import { ICreateChat, ICreateGroup, ISendMessage } from "../dto/chat.dto";
+import { ICreateGroup, ISendMessage } from "../dto/chat.dto";
 import { ChatModel, UserModel, MessageModel } from "../models";
 
 export const createChatService = async(payload: ISendMessage, userId: string, counterPartyId: string) => {
@@ -6,7 +6,7 @@ export const createChatService = async(payload: ISendMessage, userId: string, co
         const receiver  = await UserModel.findById(counterPartyId)
         if(!receiver) return{status:404, message: "User Not Found"};
 
-        //check if chat exists
+        // check if chat exists
         const chatExists = await ChatModel.findOne({ users: {$all: [userId, counterPartyId]}})
         if(chatExists){
 
@@ -16,7 +16,7 @@ export const createChatService = async(payload: ISendMessage, userId: string, co
             return{status:200, message: "Chat Exists, Please Continue Chatting", data: newMessage};
         }
 
-        
+
         const newChat = await ChatModel.create({
             users: [userId, counterPartyId]
         })
@@ -44,7 +44,7 @@ export const getUsersChatService = async(userId: string, counterPartyId: string)
         const receiver  = await UserModel.findById(counterPartyId)
         if(!receiver) return{status:404, message: "User Not Found"};
 
-        //check if chat exists
+        // check if chat exists
         const chatExists = await ChatModel.findOne({ users: {$all: [userId, counterPartyId]}})
         return {status: 200, message: "Chat Fetched Successfully", data: chatExists}
     }catch(error){
@@ -62,7 +62,7 @@ export const sendMessageService = async(payload: ISendMessage) => {
                 await chatExist.save();
                 return{status: 200, message: "Group Message Sent Successfully", data: newMessage}
             }
-            const chatExists = await ChatModel.findOne({ id: payload.chatId, users: {$all: 
+            const chatExists = await ChatModel.findOne({ id: payload.chatId, users: {$all:
                 [payload.receiverId[0], payload.senderId]}})
             if(chatExists){
                 const newMessage =  await MessageModel.create({ ...payload, messageType: 'user:user' });

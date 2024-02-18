@@ -1,4 +1,4 @@
-import { number, object, string, TypeOf } from 'zod';
+import { object, string, TypeOf } from 'zod';
 
 export const UserRegisterInputSchema = object({
     body: object({
@@ -25,7 +25,7 @@ export const UserRegisterInputSchema = object({
       }).min(6, 'Confirm Password too short - should be 6 chars minimum'),
     }),
   });
-  
+
 export interface IEmailVerify{
   otp: string;
   email: string;

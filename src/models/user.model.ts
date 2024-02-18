@@ -25,11 +25,11 @@ interface UserDoc extends Document {
       type: String,
       required: true
     },
-    lastName: { 
+    lastName: {
       type: String,
       required: true
     },
-    userName: { 
+    userName: {
       type: String,
       required: true,
       lowercase: true,
@@ -42,7 +42,7 @@ interface UserDoc extends Document {
     maxlength: 255,
     lowercase: true,
     trim: true,
-    match: [ 
+    match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Please, enter a valid email",
       ],
@@ -101,7 +101,7 @@ interface UserDoc extends Document {
     },
   },{ timestamps: true });
 
-  
+
   const UserModel = mongoose.model<UserDoc>("User", UserSchema);
-  
+
   export default UserModel;

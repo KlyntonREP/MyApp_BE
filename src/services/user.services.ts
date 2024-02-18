@@ -1,16 +1,15 @@
 import { UserModel, OtpModel } from "../models/index";
-import { IUserRegisterInput, 
-    IEmailVerify, 
-    IUserLogin, 
-    IUserResendcode, 
+import { IUserRegisterInput,
+    IEmailVerify,
+    IUserLogin,
+    IUserResendcode,
     IUserForgotPassEmail,
     IUserResetPass,
     IUserForgotPassPhone,
     IEditProfile,
     IEditEmail,
     IChangeEmail
-} from "../dto"
-import log from '../utility/logger';
+} from "../dto";
 import { GenCode, generateAndStoreOTP, sendMail} from "../utility/helpers";
 import bcrypt from 'bcryptjs';
 import { signToken } from '../utility/jwtUtility';
@@ -21,24 +20,24 @@ import config from "../config/environmentVariables";
 export const createUserService = async(payload: IUserRegisterInput["body"]) => {
     try{
         const { firstName, lastName, email, password, userName, phone, confirmPassword } = payload;
-        const userExist = await UserModel.findOne({ email: email });
+        const userExist = await UserModel.findOne({ email });
         if(userExist) return{
             status:409,
             message:"User already exists",
         };
-        if(password != confirmPassword){
+        if(password !== confirmPassword){
             return{
                 status:400,
                 message:"Passwords Do Not Match",
             };
         }
         const hashPassword = await bcrypt.hash(password, 12);
-        const user = await UserModel.create({ 
-            email: email, 
-            firstName: firstName, 
-            lastName: lastName, 
-            password: hashPassword, 
-            userName: userName, 
+        const user = await UserModel.create({
+            email,
+            firstName,
+            lastName,
+            password: hashPassword,
+            userName,
             phoneNumber: phone,
         });
 
@@ -65,7 +64,7 @@ export const createUserService = async(payload: IUserRegisterInput["body"]) => {
 export const resendCodeService = async (payload: IUserResendcode) => {
     try{
         const { email } = payload;
-        const user = await UserModel.findOne({ email: email })
+        const user = await UserModel.findOne({ email })
         if(!user){
             return{
                 status:404,
@@ -96,22 +95,22 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
     try{
         const { otp, email } = payload;
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
-        
+
         if(!verifyEmail || verifyEmail === null){
             return{
                 status:400,
-                message:"Code Has Expired Please Request For A New One", 
+                message:"Code Has Expired Please Request For A New One",
             };
         }
         const rightOtp = await bcrypt.compare(otp, verifyEmail.otp)
         if(!rightOtp){
             return{
                 status:409,
-                message:"Invalid OTP", 
-            }; 
+                message:"Invalid OTP",
+            };
         }
         const user: any = await UserModel.findOne({ email: verifyEmail.userEmail})
-        if(user.status === "Active" && user.IsEmailVerified == true ){
+        if(user.status === "Active" && user.IsEmailVerified === true ){
             return{
                 status: 401,
                 message: "This Email Is Already verified"
@@ -119,8 +118,8 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
         }
         user.status = "Active";
         user.isEmailVerified = true;
-        const newVerify = await user.save();
-        
+        await user.save();
+
         user.password = undefined
         return {status: 200, message: "Verification successful!!!✅", data: user}
 
@@ -132,25 +131,25 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
 export const UserLoginService = async (payload: IUserLogin ) => {
     try{
         const { username, email, password } = payload;
-        const userEmail: any = await UserModel.findOne({ email: email });
+        const userEmail: any = await UserModel.findOne({ email });
         const userByUsername: any = await UserModel.findOne({ userName: username });
         if(!userEmail && !userByUsername){
             return{
                 status:404,
-                message:"User Not Found", 
+                message:"User Not Found",
             };
         }
         const verifyPass = await bcrypt.compare(password, userEmail?.password || userByUsername?.password );
         if(!verifyPass){
             return{
                 status:401,
-                message:"Invalid Credentials", 
+                message:"Invalid Credentials",
             };
         }
-        if(userEmail?.status != "Active" && userByUsername?.status != "Active"){
+        if(userEmail?.status !== "Active" && userByUsername?.status !== "Active"){
             return{
                 status:400,
-                message:"Your account is not active, Please activate your account", 
+                message:"Your account is not active, Please activate your account",
             };
         }
         return{status: 200, message:"Login Successful", data:{
@@ -166,12 +165,12 @@ export const UserLoginService = async (payload: IUserLogin ) => {
 export const forgotPassEmailService = async(payload: IUserForgotPassEmail) => {
     try{
         const { email } = payload;
-        const user: any = await UserModel.findOne({ email: email });
-        
+        const user: any = await UserModel.findOne({ email });
+
         if(!user){
             return{
                 status:404,
-                message:"User Not Found", 
+                message:"User Not Found",
             };
         }
         const otp = await generateAndStoreOTP(user.email)
@@ -200,7 +199,7 @@ export const forgotPassPhoneService = async(payload: IUserForgotPassPhone) => {
         const accountSid = config.TWILO_ACCOUNT_SID;
         const authToken = config.TWILO_AUTH_TOKEN;
         const client = twilio(accountSid, authToken);
-        const user: any = await UserModel.findOne({ phoneNumber: phoneNumber})
+        const user: any = await UserModel.findOne({ phoneNumber})
         if(!user || user === null){
             return{
                 status:404,
@@ -225,7 +224,7 @@ export const resetPassService = async(payload: IUserResetPass) => {
     try{
         const { email, code, password, confirmPassword} = payload;
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
-        
+
         if(!verifyEmail || verifyEmail === null){
             return{ status:400, message:"Code Has Expired Please Request For A New One" };
         }
@@ -243,12 +242,12 @@ export const resetPassService = async(payload: IUserResetPass) => {
         const user: any = await UserModel.findOne({ email: verifyEmail.userEmail})
         const newpassword = await bcrypt.hash(password, 12);
         user.password = newpassword;
-        const newUser = await user.save();
+        await user.save();
         user.password = undefined
         return {status: 200, message: "Password Reset Successfully", data: user}
 
     }catch(error){
-        return { status: 500, message: "Internal Server Error", data: error }   
+        return { status: 500, message: "Internal Server Error", data: error }
     }
 }
 
@@ -276,12 +275,12 @@ export const updateProfileService = async(user:string, payload: IEditProfile) =>
             return { status:400, message: "This User Has Already Been Taken"}
         }
 
-        const updateUser = User.save();
+        await User.save();
         User.password = undefined
-        return{status: 200, message: "User Profile Updated Successfully", data: user} 
+        return{status: 200, message: "User Profile Updated Successfully", data: user}
 
     }catch(error) {
-        return{status: 500, message: "Internal Server Error", data: error} 
+        return{status: 500, message: "Internal Server Error", data: error}
     }
 }
 
@@ -290,7 +289,7 @@ export const editEmailService = async(user: string, payload: IEditEmail) => {
         if(!user) return{status: 404, message: "User Not Found"};
 
         const User: any = await UserModel.findById(user).exec();
-        if(payload.email != User.email){
+        if(payload.email !== User.email){
             return{status: 401, message: "This Email Address Does Not Exist On Your Account"};
         };
 
@@ -298,7 +297,7 @@ export const editEmailService = async(user: string, payload: IEditEmail) => {
         const name = `${User.firstName} ${User.lastName}`;
         const message = `<h1>Change Of Email</h1>
         <h2>Hello ${name}</h2>
-        <p>A request has been made to change your email.</br> 
+        <p>A request has been made to change your email.</br>
         If you did initiate this action please login to your account and change your password.</br>
         Else input the code below to continue</p>
         <p>Verification Code: ${otp}</p>
@@ -328,7 +327,7 @@ export const changeEmailService = async(user: string, payload: IChangeEmail) => 
         if(!Otp || Otp === null){
             return{
                 status:400,
-                message:"Code Has Expired Please Request For A New One", 
+                message:"Code Has Expired Please Request For A New One",
             };
         }
         const rightOtp = await bcrypt.compare(otp, Otp.otp)
@@ -336,8 +335,8 @@ export const changeEmailService = async(user: string, payload: IChangeEmail) => 
         if(!rightOtp){
             return{
                 status:401,
-                message:"Invalid OTP", 
-            }; 
+                message:"Invalid OTP",
+            };
         }
         User.email = email;
         User.save()
@@ -387,7 +386,7 @@ export const followService = async( user: string, followId: string) => {
         if(User.following.includes(followId)){
             return { status: 400, message:"Already Following This User. Cannot Follow User Twice"}
         }
-        
+
         followProfile.followers.push(user)
         User.following.push(followId)
         followProfile.save()

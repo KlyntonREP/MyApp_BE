@@ -98,7 +98,7 @@ const createChat = {
     },
 };
 
-//get User Chats(gets all the chats of the current logged in user)
+// get User Chats(gets all the chats of the current logged in user)
 const getUserChats = {
     tags: ["Chats"],
     description:
@@ -145,7 +145,7 @@ const getUserChats = {
     },
 };
 
-//gets the chat between a logged in user and another user
+// gets the chat between a logged in user and another user
 const getUsersChat = {
     tags: ["Chats"],
     description:

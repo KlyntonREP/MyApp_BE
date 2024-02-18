@@ -16,7 +16,7 @@ export default async (app: Application) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  //set cross origin resource sharing
+  // set cross origin resource sharing
   app.use(cors());
 
 
@@ -29,7 +29,7 @@ export default async (app: Application) => {
   // Prevent http para
   app.use(hpp());
 
-  //setting up swagger doc
+  // setting up swagger doc
   const specs = swaggerJsDoc(options);
   app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(specs));
 

@@ -6,7 +6,7 @@ export interface ISendMessage{
     isMedia: boolean;
     media?: string;
     mediaType?: 'image' | 'pdf' | 'audio';
-    messageUniqueId: string; 
+    messageUniqueId: string;
     isGroup: boolean;
 }
 
@@ -15,7 +15,7 @@ export interface ICreateChat{
     isMedia: boolean;
     media?: string;
     mediaType?: 'image' | 'pdf' | 'audio';
-    messageUniqueId: string; 
+    messageUniqueId: string;
 }
 export interface ICreateGroup{
     users: string[],

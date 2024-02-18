@@ -1,29 +1,32 @@
 import { UserModel, PostModel} from "../models/index";
-import { deleteFileFromS3, uploadFile } from "../utility/s3";
-import { 
+import { uploadFile } from "../utility/s3";
+import {
     ICreatePost,
 } from "../dto";
+
+
 
 export const createPostService = async( payload: ICreatePost, user: string, files: any  ) => {
     try{
         const { caption } = payload;
-        let imageUrl, videoUrl;
+        let imageUrl;
+        let videoUrl;
         if(!user){
             return { status: 404, message: "User Not Found"}
         }
-        if (files["image"]) {
-            const imageFile = files["image"][0]; // Assuming the image field contains a single file
+        if (files.image) {
+            const imageFile = files.image[0]; // Assuming the image field contains a single file
             imageUrl = await uploadFile(imageFile, "images"); // Process the files as needed by uploading them to AWS S3 and generate URLs
         } else {
         console.log("No image is being sent");
         }
-        if (files["video"]) {
-        const videoFile = files["video"][0]; // Assuming the video field contains a single file
+        if (files.video) {
+        const videoFile = files.video[0]; // Assuming the video field contains a single file
         videoUrl = await uploadFile(videoFile, "videos"); // Process the files as needed by uploading them to AWS S3 and generate URLs
         } else {
         console.log("No video is being sent");
         }
-        
+
         // Create the post object
         const post = {
             userId: user,
@@ -50,7 +53,7 @@ export const createPostService = async( payload: ICreatePost, user: string, file
 }
 
 
-//fetches all the posts on a users homepage
+// fetches all the posts on a users homepage
 export const homepageService = async(user: string) => {
     try{
         const User:any = await UserModel.findById(user);

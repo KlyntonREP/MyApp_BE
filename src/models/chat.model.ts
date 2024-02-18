@@ -4,12 +4,12 @@ import MessageModel from "./messages.model";
 
 interface ChatDoc extends Document {
     users: typeof UserModel[];
-    messages: typeof MessageModel[]
+    messages: typeof MessageModel[];
     isGroup: boolean;
     groupName?: string;
 }
 
-  const ChatSchema: Schema = new mongoose.Schema<ChatDoc>({
+  const ChatSchema: Schema | undefined = new mongoose.Schema<ChatDoc>({
     users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     messages: [{ type: Schema.Types.ObjectId, ref: 'Message'}],
     isGroup: {
@@ -23,11 +23,11 @@ interface ChatDoc extends Document {
 
   ChatSchema.pre('save', function(next){
     if(this.isGroup){
-        if(this.user.length > +(process.env.MAX_GROUP_NUMBER as string)){
+        if(this.users.length > +(process.env.MAX_GROUP_NUMBER as string)){
             next(new Error(`Maximum Number Of Users In A Group Must Not Exceed ${process.env.MAX_GROUP_NUMBER}`));
         }
     }else{
-        if(this.user.length > 2){
+        if(this.users.length > 2){
             next(new Error("Maximum Number Of Users In A Users Room Must Not Be More Than 2"))
         }
     }
@@ -35,5 +35,5 @@ interface ChatDoc extends Document {
   })
 
 const ChatModel = mongoose.model<ChatDoc>("Chat", ChatSchema);
-  
+
 export default ChatModel;
