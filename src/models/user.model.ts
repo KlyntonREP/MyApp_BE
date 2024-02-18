@@ -13,7 +13,6 @@ interface UserDoc extends Document {
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
     status: string;
-    currentSocketId?: string;
     accessToken: string;
     refreshToken: string;
     followers: string[];

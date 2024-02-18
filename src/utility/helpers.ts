@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import log from "./logger";
 import { OtpModel } from "../models";
 import bcrypt from 'bcryptjs';
+import cron from 'node-cron';
 
 // this fuction generates a randow string of length === 32
 export function generateReference(length = 32, chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
@@ -84,3 +85,19 @@ export const generateAndStoreOTP = async(userEmail:string) => {
     return{message: error.message}
   }
 }
+
+cron.schedule('*/1 * * * *', async () => {
+  try {
+    // Calculate the time 5 minutes ago
+    const fiveMinutesAgo = new Date(Date.now() - 4 * 60 * 1000);
+
+    // Find and delete OTPs created more than 5 minutes ago
+    const result = await OtpModel.deleteMany({ updatedAt: { $lt: fiveMinutesAgo } });
+
+    if(result.deletedCount >  0) {
+      console.log('Deleted expired OTPs successfully.');
+    }
+  } catch (error) {
+    console.error('Error deleting expired OTPs:', error);
+  }
+});
