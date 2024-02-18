@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import {  createUserService, 
-    verifyEmailService , 
-    UserLoginService, 
-    resendCodeService, 
+import {  createUserService,
+    verifyEmailService ,
+    UserLoginService,
+    resendCodeService,
     forgotPassEmailService,
     forgotPassPhoneService,
     resetPassService,
@@ -27,8 +27,8 @@ export const createUserController = async(req: Request, res: Response) => {
     try{
         const response: any = await createUserService(req.body);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -47,13 +47,13 @@ export const resendCodeController  = async (req: Request, res: Response) => {
     try{
         const response: any = await resendCodeService(req.body);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
         console.log(error);
-        res.status(500).json({message: error.message}); 
+        res.status(500).json({message: error.message});
     }
 }
 
@@ -67,8 +67,8 @@ export const verifyUserController = async(req: Request, res: Response) => {
     try{
         const response: any = await verifyEmailService(req.body);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -87,8 +87,8 @@ export const UserLoginController = async(req: Request, res: Response) => {
     try{
         const response: any = await UserLoginService(req.body);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -107,8 +107,8 @@ export const forgotPassEmailController =  async(req: Request, res: Response) => 
     try{
         const response: any = await forgotPassEmailService(req.body);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -127,8 +127,8 @@ export const forgotPassPhoneController =  async(req: Request, res: Response) => 
     try{
         const response: any = await forgotPassPhoneService(req.body);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -147,8 +147,8 @@ export const resetPassController =  async(req: Request, res: Response) => {
     try{
         const response: any = await resetPassService(req.body);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -166,13 +166,13 @@ export const resetPassController =  async(req: Request, res: Response) => {
 export const updateProfilerController = async(req: Request, res: Response) => {
     try{
         const user: string = await req.loggedInUser.id;
-        const payload = <IEditProfile>req.body;
+        const payload = req.body as IEditProfile;
         const response: any = await updateProfileService(user, payload);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -188,13 +188,13 @@ export const updateProfilerController = async(req: Request, res: Response) => {
 export const editEmailController = async(req: Request, res: Response) => {
     try{
         const user: string = await req.loggedInUser.id;
-        const payload = <IEditEmail>req.body;
-        const response: any = await editEmailService(user, req.body);
+        const payload = req.body as IEditEmail;
+        const response: any = await editEmailService(user, payload);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -210,13 +210,13 @@ export const editEmailController = async(req: Request, res: Response) => {
 export const changeEmailController = async(req: Request, res: Response) => {
     try{
         const user: string = await req.loggedInUser.id;
-        const payload = <IChangeEmail>req.body;
+        const payload = req.body as IChangeEmail;
         const response: any = await changeEmailService(user, payload);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -234,8 +234,8 @@ export const getProfileController = async(req: Request, res: Response) => {
         const user: string = await req.loggedInUser.id
         const response: any = await getProfileService(user);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -254,8 +254,8 @@ export const getUserByIdController = async(req: Request, res: Response) => {
         const { userId: userId } = req.params;
         const response: any = await getUserByIdService(userId);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -275,14 +275,14 @@ export const followController =  async(req: Request, res: Response) => {
         const { followId: followId } = req.params;
         const response: any = await followService(user, followId);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
         res.status(500).json({message: error.message});
     }
-    
+
 }
 
 /**
@@ -298,8 +298,8 @@ export const unfollowController =  async(req: Request, res: Response) => {
         const { unfollowId: unfollowId } = req.params;
         const response: any = await unfollowService(user, unfollowId);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){

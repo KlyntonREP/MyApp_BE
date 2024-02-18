@@ -5,7 +5,7 @@ interface OtpDoc extends Document {
     userEmail: string;
   }
 
-  
+
   const OtpSchema: Schema = new mongoose.Schema<OtpDoc>({
     otp: {
       type: String,
@@ -18,14 +18,14 @@ interface OtpDoc extends Document {
     maxlength: 255,
     lowercase: true,
     trim: true,
-    match: [ 
+    match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Please, enter a valid email",
       ],
     },
   },{ timestamps: true });
 
-  
+
   const OtpModel = mongoose.model<OtpDoc>("otp", OtpSchema);
-  
+
   export default OtpModel;

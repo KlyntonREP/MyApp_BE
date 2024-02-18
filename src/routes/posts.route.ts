@@ -1,7 +1,7 @@
 import express from 'express';
 import {
     createpostController,
-    getHomePageController 
+    getHomePageController
 } from '../controllers/index';
 import { Authenticate } from '../middlewares/auth.middleware';
 // import validate from '../middlewares/validateResource';

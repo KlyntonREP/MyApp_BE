@@ -10,7 +10,7 @@ dotenv.config();
 const StartServer = async () => {
 
   const app = express();
-  
+
   await ExpressApp(app);
 
   await connectDB();
@@ -22,7 +22,7 @@ const StartServer = async () => {
     log.info(`Swagger doc listening on: http://localhost:${PORT}/api/docs`);
   });
 
-  //This block of code we are setting our socket io server
+  // This block of code we are setting our socket io server
   // const wsServer = http.createServer(app);
   // createWebSocketServer(wsServer);
 };

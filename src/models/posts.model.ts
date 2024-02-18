@@ -8,25 +8,25 @@ interface PostDoc extends Document {
   }
 
   const PostSchema: Schema = new mongoose.Schema<PostDoc>({
-    userId: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'User' 
+    userId: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }],
-    caption: { 
+    caption: {
       type: String,
       required: true
     },
-    imageUrl: { 
+    imageUrl: {
       type: String,
       required: true
     },
-    videoUrl: { 
+    videoUrl: {
         type: String,
         required: false
     }
   },{ timestamps: true });
 
-  
+
   const PostModel = mongoose.model<PostDoc>("Post", PostSchema);
-  
+
   export default PostModel;

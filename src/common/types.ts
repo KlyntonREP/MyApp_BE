@@ -1,5 +1,4 @@
 import io from "socket.io";
-import { ApiError } from "../utility/apiError"
 
 export interface IUser {
   userId: string;

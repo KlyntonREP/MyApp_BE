@@ -13,13 +13,13 @@ import {
  */
 export const createpostController = async(req: Request, res:Response) => {
     try{
-        const payload = <ICreatePost>req.body
+        const payload = req.body as ICreatePost
         const user: string = await req.loggedInUser.id;
         const file = req.files as { [fieldname: string]: Express.Multer.File[] };
         const response: any = await createPostService(payload, user, file);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){
@@ -39,8 +39,8 @@ export const getHomePageController = async(req: Request, res:Response) => {
         const user: string = await req.loggedInUser.id;
         const response: any = await homepageService( user );
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
         });
     }catch(error: any){

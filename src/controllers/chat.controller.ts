@@ -15,10 +15,10 @@ export const createChatController = async(req: Request, res: Response) => {
         const { counterPartyId: counterPartyId } = req.params;
         const response: any = await createChatService(payload, userId, counterPartyId)
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -36,10 +36,10 @@ export const getUserChatsController = async(req: Request, res: Response) => {
         const userId: string = await req.loggedInUser.id;
         const response: any = await getUserChatsService(userId)
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -58,10 +58,10 @@ export const getUsersChatController = async(req: Request, res: Response) => {
         const { counterPartyId: counterPartyId } = req.params;
         const response: any = await getUsersChatService(counterPartyId,userId)
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -79,10 +79,10 @@ export const sendMessageController = async(req: Request, res: Response) => {
         const payload = req.body;
         const response: any = await sendMessageService(payload)
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -101,10 +101,10 @@ export const getMessagesController = async(req: Request, res: Response) => {
         const {chatId: chatId} = req.params;
         const response: any = await getMessagesService(chatId)
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});
@@ -122,10 +122,10 @@ export const createGroupController = async (req: Request, res: Response) => {
         const payload: ICreateGroup = req.body;
         const response = await createGroupService(payload);
         return res.status(response.status).json({
-            status: response.status, 
-            message: response.message, 
+            status: response.status,
+            message: response.message,
             data: response.data
-        }); 
+        });
     }catch(error: any){
         console.log(error);
         res.status(500).json({message: error.message});

@@ -18,7 +18,7 @@ export const ValidateJwt = async (req: Request) => {
   return false;
 };
 
-//generating a random token for jwt
+// generating a random token for jwt
 const genToken = async(data: any) => {
    const token = jwt.sign(
         { ...data,}, process.env.JWT_SECRET as string, {expiresIn: process.env.JWT_EXPIRE}
@@ -31,11 +31,11 @@ export const signToken = async (data: any) => {
     const token = await genToken({
       ...data,
     });
-  
+
     return token;
 };
 
-//verify jwt token
+// verify jwt token
 export const verifyAuthTokens = async (token: string) => {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string, userName: string};
