@@ -1,2 +1,2 @@
 export * from './error.middleware';
-export * from './httpException'
+export * from './httpException';
