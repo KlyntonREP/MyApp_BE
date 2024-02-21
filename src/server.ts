@@ -21,10 +21,6 @@ const StartServer = async () => {
     log.info(`Server listening on: http://localhost:${PORT}`);
     log.info(`Swagger doc listening on: http://localhost:${PORT}/api/docs`);
   });
-
-  // This block of code we are setting our socket io server
-  // const wsServer = http.createServer(app);
-  // createWebSocketServer(wsServer);
 };
 
 StartServer();

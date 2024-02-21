@@ -15,6 +15,7 @@ import bcrypt from 'bcryptjs';
 import { signToken } from '../utility/jwtUtility';
 import twilio from 'twilio';
 import config from "../config/environmentVariables";
+import log from '../utility/logger';
 
 
 export const createUserService = async(payload: IUserRegisterInput["body"]) => {
@@ -86,7 +87,7 @@ export const resendCodeService = async (payload: IUserResendcode) => {
         }
         return {status: 400, message:"Error Sending Email"}
     }catch(error){
-        console.log(error);
+        log.info(error);
         return{status: 500, message:"Internal Server Error", data: error}
     }
 }
@@ -213,7 +214,7 @@ export const forgotPassPhoneService = async(payload: IUserForgotPassPhone) => {
             from: config.SMS_NUMBER,
             to: `${user.phoneNumber}`
         })
-        console.log(message.sid)
+        log.info(message.sid)
         return {status: 200, message: "Reset Password Code Sent Successfully"}
     }catch(error){
         return{status: 500, message: "Internal Server Error", data: error}
@@ -323,7 +324,7 @@ export const changeEmailService = async(user: string, payload: IChangeEmail) => 
         }
         const User: any = await UserModel.findById(user).exec();
         const Otp: any = await OtpModel.findOne({userEmail: User.email});
-        console.log("User Otp", Otp)
+        log.info("User Otp", Otp)
         if(!Otp || Otp === null){
             return{
                 status:400,
@@ -331,7 +332,7 @@ export const changeEmailService = async(user: string, payload: IChangeEmail) => 
             };
         }
         const rightOtp = await bcrypt.compare(otp, Otp.otp)
-        console.log("Right OTP: ", rightOtp)
+        log.info("Right OTP: ", rightOtp)
         if(!rightOtp){
             return{
                 status:401,
@@ -344,7 +345,7 @@ export const changeEmailService = async(user: string, payload: IChangeEmail) => 
         return {status: 200, message: "Email Changed Successfully", data: User}
 
     }catch(error){
-        console.log(error)
+        log.info(error)
         return {status: 500, message: "Internal Server Error", data: error};
     }
 }

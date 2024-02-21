@@ -4,6 +4,7 @@ import {
     createPostService,
     homepageService
 } from "../services/index";
+import log from '../utility/logger';
 
 /**
  * @description Create A Post
@@ -23,7 +24,7 @@ export const createpostController = async(req: Request, res:Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -44,7 +45,7 @@ export const getHomePageController = async(req: Request, res:Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }

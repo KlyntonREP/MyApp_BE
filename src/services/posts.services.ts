@@ -3,6 +3,7 @@ import { uploadFile } from "../utility/s3";
 import {
     ICreatePost,
 } from "../dto";
+import log from '../utility/logger';
 
 
 
@@ -18,13 +19,13 @@ export const createPostService = async( payload: ICreatePost, user: string, file
             const imageFile = files.image[0]; // Assuming the image field contains a single file
             imageUrl = await uploadFile(imageFile, "images"); // Process the files as needed by uploading them to AWS S3 and generate URLs
         } else {
-        console.log("No image is being sent");
+        log.info("No image is being sent");
         }
         if (files.video) {
         const videoFile = files.video[0]; // Assuming the video field contains a single file
         videoUrl = await uploadFile(videoFile, "videos"); // Process the files as needed by uploading them to AWS S3 and generate URLs
         } else {
-        console.log("No video is being sent");
+        log.info("No video is being sent");
         }
 
         // Create the post object
@@ -70,7 +71,7 @@ export const homepageService = async(user: string) => {
 
         return { status: 201, message: "Posts Gotten Successfully", data: posts};
     }catch(error){
-        console.log("Create post error", error);
+        log.info("Create post error", error);
         return{status: 500, message: "Internal Server Error", data: error}
     }
 }
