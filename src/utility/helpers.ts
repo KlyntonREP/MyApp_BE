@@ -7,11 +7,11 @@ import bcrypt from 'bcryptjs';
 import cron from 'node-cron';
 
 // this fuction generates a randow string of length === 32
-export function generateReference(length = 32, chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-  let result = '';
-  for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-  return result;
-}
+// export function generateReference(length = 32, chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+//   let result = '';
+//   for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+//   return result;
+// }
 
 
 // Random code generator(generates 6 random numbers)
@@ -51,10 +51,9 @@ export const sendMail = async (
       };
       return transport.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log(name)
-          console.log("Error occurred while sending email:", error);
+          log.info("Error occurred while sending email:", error);
         } else {
-          console.log("Email sent successfully!", info.response);
+          log.info("Email sent successfully!", info.response);
         }
       });
     } catch (error: any) {
@@ -98,7 +97,7 @@ cron.schedule('*/1 * * * *', async () => {
     const result = await OtpModel.deleteMany({ updatedAt: { $lt: fiveMinutesAgo } });
 
     if(result.deletedCount >  0) {
-      console.log('Deleted expired OTPs successfully.');
+      log.info('Deleted expired OTPs successfully.');
     }
   } catch (error) {
     console.error('Error deleting expired OTPs:', error);

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { createChatService, createGroupService, getMessagesService, getUserChatsService, getUsersChatService, sendMessageService } from '../services';
 import { ICreateGroup } from '../dto/chat.dto';
+import log from '../utility/logger';
 
 /**
  * @description Create Chat Message
@@ -20,7 +21,7 @@ export const createChatController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -41,7 +42,7 @@ export const getUserChatsController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -63,7 +64,7 @@ export const getUsersChatController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -84,7 +85,7 @@ export const sendMessageController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -106,7 +107,7 @@ export const getMessagesController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -127,7 +128,7 @@ export const createGroupController = async (req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }

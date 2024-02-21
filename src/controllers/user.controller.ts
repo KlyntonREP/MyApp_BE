@@ -15,6 +15,7 @@ import {  createUserService,
     changeEmailService,
 } from "../services/index";
 import { IChangeEmail, IEditProfile, IEditEmail } from '../dto';
+import log from '../utility/logger';
 
 
 /**
@@ -32,7 +33,7 @@ export const createUserController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -52,7 +53,7 @@ export const resendCodeController  = async (req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -72,7 +73,7 @@ export const verifyUserController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -92,7 +93,7 @@ export const UserLoginController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -112,7 +113,7 @@ export const forgotPassEmailController =  async(req: Request, res: Response) => 
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -132,7 +133,7 @@ export const forgotPassPhoneController =  async(req: Request, res: Response) => 
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -152,7 +153,7 @@ export const resetPassController =  async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -174,7 +175,7 @@ export const updateProfilerController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -196,7 +197,7 @@ export const editEmailController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -218,7 +219,7 @@ export const changeEmailController = async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }
@@ -303,7 +304,7 @@ export const unfollowController =  async(req: Request, res: Response) => {
             data: response.data
         });
     }catch(error: any){
-        console.log(error);
+        log.info(error);
         res.status(500).json({message: error.message});
     }
 }

@@ -1,24 +1,24 @@
 import mongoose, {Schema} from "mongoose";
 
 interface UserDoc extends Document {
-    email: string;
-    firstName: string;
-    lastName: string;
-    userName: string;
-    password: string | undefined;
-    phoneNumber: string;
-    image: string | null;
-    gender: string | null;
-    bio: string | null;
-    isEmailVerified: boolean;
-    isPhoneVerified: boolean;
-    status: string;
-    accessToken: string;
-    refreshToken: string;
-    followers: string[];
-    following: string[];
-    posts: string[];
-  }
+  email: string;
+  firstName: string;
+  lastName: string;
+  userName: string;
+  password: string | undefined;
+  phoneNumber: string;
+  image: string | null;
+  gender: string | null;
+  bio: string | null;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  status: string;
+  accessToken: string;
+  refreshToken: string;
+  followers: string[];
+  following: string[];
+  posts: string[];
+}
 
   const UserSchema: Schema = new mongoose.Schema<UserDoc>({
     firstName: {

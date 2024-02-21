@@ -1,6 +1,7 @@
 import { Request } from "express";
 import jwt from "jsonwebtoken";
 import { ApiError } from "./apiError";
+import log from '../utility/logger';
 
 // verifying authorization token and storing it in the req.user
 export const ValidateJwt = async (req: Request) => {
@@ -42,7 +43,7 @@ export const verifyAuthTokens = async (token: string) => {
 
     return payload;
   } catch (error) {
-    console.log("verify token error: ", error);
+    log.info("verify token error: ", error);
     return {
       error: new ApiError('Error verifying auth tokens', error as Error),
     };

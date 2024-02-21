@@ -3,6 +3,7 @@ import * as mimetypes from "mime-types";
 import config from "../config/environmentVariables"
 import fs from "fs";
 import { promisify } from "util";
+import log from '../utility/logger';
 
 const readFile = promisify(fs.readFile);
 
@@ -81,7 +82,7 @@ export const uploadFile = async (
       }
 
       const fileUrl = await generateFileUrl(fileName, folder, file.mimetype);
-      console.log(fileUrl);
+      log.info(fileUrl);
       return fileUrl;
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -98,7 +99,7 @@ export const deleteFileFromS3 = async (fileUrl: string) => {
         Key: fileKey,
       };
       await s3Client.deleteObject(params).promise();
-      console.log(`File ${fileKey} deleted from S3 bucket ${bucketName}`);
+      log.info(`File ${fileKey} deleted from S3 bucket ${bucketName}`);
     } catch (error) {
       console.error("Error deleting file from S3:", error);
       throw new Error("Failed to delete file from S3");
