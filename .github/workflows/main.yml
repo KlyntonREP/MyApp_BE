@@ -23,9 +23,9 @@ jobs:
       - name: 'deploy to dockerhub'
         run: |
           TIMESTAMP=$(date +'%y%m%d%H%M%S')
-          docker image build -t klynton2000/my_app-be:$TIMESTAMP -t klynton2000/my_app-be:latest .
-          docker image push klynton2000/my_app-be:$TIMESTAMP
-          docker image push klynton2000/my_app-be:latest
+          docker image build -t klynton2000/my_app_be:$TIMESTAMP -t klynton2000/my_app_be:latest .
+          docker image push klynton2000/my_app_be:$TIMESTAMP
+          docker image push klynton2000/my_app_be:latest
 
   deploy:
     runs-on: 'ubuntu-latest'
@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.SERVER_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            docker stop my_app-be || true && docker rm my_app-be || true && docker rmi $(docker images --filter="reference=klynton2000/my_app-be" --quiet) || true && docker container run -d --name my_app-be -p 3030:3030 -v ~/my_app-be/public:/app/public --restart=unless-stopped --env-file ~/my_app-be_env/.env klynton2000/my_app-be:latest
+            docker stop my_app_be || true && docker rm my_app_be || true && docker rmi $(docker images --filter="reference=klynton2000/my_app_be" --quiet) || true && docker container run -d --name my_app_be -p 3030:3030 -v ~/my_app_be/public:/app/public --restart=unless-stopped --env-file ~/my_app_be_env/.env klynton2000/my_app_be:latest
 
 
             #
