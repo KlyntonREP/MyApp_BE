@@ -39,10 +39,4 @@ jobs:
           key: ${{ secrets.SERVER_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            docker stop my_app_be || true && docker rm my_app_be || true && docker rmi $(docker images --filter="reference=klynton2000/my_app_be" --quiet) || true && docker container run -d --name my_app_be -p 3030:3030 -v ~/my_app_be/public:/app/public --restart=unless-stopped --env-file ~/my_app_be_env/.env klynton2000/my_app_be:latest
-
-
-
-
-
-
+            sudo docker stop my_app_be || true && sudo docker rm my_app_be || true && sudo docker rmi $(sudo docker images --filter="reference=klynton2000/my_app_be" --quiet) || true && sudo docker container run -d --name my_app_be -p 3030:3030 -v ~/my_app_be/public:/app/public --restart=unless-stopped --env-file ~/my_app_be_env/.env klynton2000/my_app_be:latest
