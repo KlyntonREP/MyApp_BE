@@ -42,6 +42,8 @@ jobs:
             docker stop my_app-be || true && docker rm my_app-be || true && docker rmi $(docker images --filter="reference=klynton2000/my_app-be" --quiet) || true && docker container run -d --name my_app-be -p 3030:3030 -v ~/my_app-be/public:/app/public --restart=unless-stopped --env-file ~/my_app-be_env/.env klynton2000/my_app-be:latest
 
 
+            #
+
 
 
 
