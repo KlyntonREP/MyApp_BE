@@ -1,19 +1,19 @@
 import express from 'express';
 import {
-  createUserController,
-  verifyUserController,
-  UserLoginController,
-  resendCodeController,
-  forgotPassEmailController,
-  forgotPassPhoneController,
-  resetPassController,
-  updateProfilerController,
-  followController,
-  unfollowController,
-  getProfileController,
-  getUserByIdController,
-  editEmailController,
-  changeEmailController,
+    createUserController,
+    verifyUserController,
+    UserLoginController,
+    resendCodeController,
+    forgotPassEmailController,
+    forgotPassPhoneController,
+    resetPassController,
+    updateProfilerController,
+    followController,
+    unfollowController,
+    getProfileController,
+    getUserByIdController,
+    editEmailController,
+    changeEmailController,
 } from '../controllers/index';
 import { Authenticate } from '../middlewares/auth.middleware';
 import validate from '../middlewares/validateResource';
@@ -32,7 +32,7 @@ router.put('/update-profile', Authenticate, updateProfilerController);
 router.post('/edit-email', Authenticate, editEmailController);
 router.put('/change-email', Authenticate, changeEmailController);
 router.get('/profile', Authenticate, getProfileController);
-router.get('/profile/:userId', Authenticate, getUserByIdController)
+router.get('/profile/:userId', Authenticate, getUserByIdController);
 router.post('/follow/:followId', Authenticate, followController);
 router.post('/unfollow/:unfollowId', Authenticate, unfollowController);
 

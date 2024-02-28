@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
 import { ICreatePost } from '../dto';
-import {
-    createPostService,
-    homepageService
-} from "../services/index";
+import { createPostService, homepageService } from '../services/index';
 import log from '../utility/logger';
 
 /**
@@ -12,22 +9,22 @@ import log from '../utility/logger';
  * @route /api/user/create-post/:userId
  * @access private
  */
-export const createpostController = async(req: Request, res:Response) => {
-    try{
-        const payload = req.body as ICreatePost
+export const createpostController = async (req: Request, res: Response) => {
+    try {
+        const payload = req.body as ICreatePost;
         const user: string = await req.loggedInUser.id;
         const file = req.files as { [fieldname: string]: Express.Multer.File[] };
         const response: any = await createPostService(payload, user, file);
         return res.status(response.status).json({
             status: response.status,
             message: response.message,
-            data: response.data
+            data: response.data,
         });
-    }catch(error: any){
+    } catch (error: any) {
         log.info(error);
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
-}
+};
 
 /**
  * @description Get Posts On The Home Page
@@ -35,17 +32,17 @@ export const createpostController = async(req: Request, res:Response) => {
  * @route /api/user/get-posts
  * @access private
  */
-export const getHomePageController = async(req: Request, res:Response) => {
-    try{
+export const getHomePageController = async (req: Request, res: Response) => {
+    try {
         const user: string = await req.loggedInUser.id;
-        const response: any = await homepageService( user );
+        const response: any = await homepageService(user);
         return res.status(response.status).json({
             status: response.status,
             message: response.message,
-            data: response.data
+            data: response.data,
         });
-    }catch(error: any){
+    } catch (error: any) {
         log.info(error);
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
-}
+};
