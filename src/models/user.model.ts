@@ -13,7 +13,6 @@ interface UserDoc extends Document {
     isEmailVerified: boolean;
     isPhoneVerified: boolean;
     status: string;
-    accessToken: string;
     refreshToken: string;
     followers: string[];
     following: string[];
@@ -89,13 +88,9 @@ const UserSchema: Schema = new mongoose.Schema<UserDoc>(
             type: [String],
             default: [],
         },
-        accessToken: {
-            type: String,
-            // required: true
-        },
         refreshToken: {
             type: String,
-            // required: true
+            required: false,
         },
     },
     { timestamps: true },

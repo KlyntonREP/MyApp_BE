@@ -1,3 +1,4 @@
-export interface IAuthPayload{
-    _id: string;
+export interface IDataStoredInToken {
+    userId: string;
+    userEmail: string;
 }

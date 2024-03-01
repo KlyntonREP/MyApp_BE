@@ -1,6 +1,9 @@
 FROM node:18-alpine
 WORKDIR /app
-EXPOSE 3000
+EXPOSE 3030
 COPY . ./
-RUN  npm install
-CMD [ "node", "./dist/server.js" ]
+RUN npm ci --include=prod
+# RUN ls -a
+RUN npm run build
+CMD [ "npm", "run", "start:prod" ]
+

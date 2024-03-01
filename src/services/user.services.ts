@@ -13,10 +13,10 @@ import {
 } from '../dto';
 import { GenCode, generateAndStoreOTP, sendMail } from '../utility/helpers';
 import bcrypt from 'bcryptjs';
-import { signToken } from '../utility/jwtUtility';
 import twilio from 'twilio';
 import config from '../config/environmentVariables';
 import log from '../utility/logger';
+import { createAccessToken, createRefreshToken } from '../utility/jwtUtility';
 
 export const createUserService = async (payload: IUserRegisterInput['body']) => {
     try {
@@ -97,13 +97,13 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
         const { otp, email } = payload;
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
 
-        if (!verifyEmail || verifyEmail === null) {
+        if (!verifyEmail) {
             return {
                 status: 400,
-                message: 'Code Has Expired Please Request For A New One',
+                message: 'Otp has expired, please request for a new one',
             };
         }
-        const rightOtp = await bcrypt.compare(otp, verifyEmail.otp);
+        const rightOtp = bcrypt.compare(otp, verifyEmail.otp);
         if (!rightOtp) {
             return {
                 status: 409,
@@ -123,46 +123,52 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
 
         user.password = undefined;
         return { status: 200, message: 'Verification successful!!!✅', data: user };
-    } catch (error) {
+    } catch (error: any) {
         return { status: 500, message: 'Internal Server Error', data: error };
     }
 };
 
 export const UserLoginService = async (payload: IUserLogin) => {
     try {
-        const { username, email, password } = payload;
-        const userEmail: any = await UserModel.findOne({ email });
-        const userByUsername: any = await UserModel.findOne({ userName: username });
-        if (!userEmail && !userByUsername) {
+        const { email, password } = payload;
+        const user: any = await UserModel.findOne({ email });
+        if (!user)
             return {
                 status: 404,
                 message: 'User Not Found',
             };
-        }
-        const verifyPass = await bcrypt.compare(password, userEmail?.password || userByUsername?.password);
-        if (!verifyPass) {
+        const verifyPass = await bcrypt.compare(password, user?.password);
+        if (!verifyPass)
             return {
                 status: 401,
                 message: 'Invalid Credentials',
             };
-        }
-        if (userEmail?.status !== 'Active' && userByUsername?.status !== 'Active') {
+        if (user?.isEmailVerified !== true)
             return {
                 status: 400,
                 message: 'Your account is not active, Please activate your account',
             };
-        }
+
+        const accessToken = await createAccessToken(user?.id, user?.email);
+
+        const refreshToken = await createRefreshToken(user?.id, user?.email);
+
+        await UserModel.updateOne({ _id: user.id }, { refreshToken });
+
+        user.password = undefined;
+        user.refreshToken = undefined;
+
         return {
             status: 200,
             message: 'Login Successful',
             data: {
-                _id: userEmail?.id || userByUsername?.id,
-                username: userEmail?.userName || userByUsername?.userName,
-                token: await signToken({ id: userEmail?.id || userByUsername?.id, username: userEmail?.userName || userByUsername?.userName }),
+                accessToken,
+                refreshToken,
+                user,
             },
         };
-    } catch (error) {
-        return { status: 500, message: 'Internal Server Error', data: error };
+    } catch (error: any) {
+        return { status: 500, message: 'Internal Server Error' };
     }
 };
 
@@ -257,9 +263,7 @@ export const updateProfileService = async (user: string, payload: IEditProfile) 
     try {
         const firstName = payload.fullName?.split(' ')[0];
         const lastName = payload.fullName?.split(' ')[1];
-        if (!user) {
-            return { status: 404, message: 'User Not Found' };
-        }
+
         const User = await UserModel.findById(user).exec();
         if (!User) {
             return { status: 401, message: 'User Does Exist' };

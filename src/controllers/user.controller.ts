@@ -73,7 +73,7 @@ export const verifyUserController = async (req: Request, res: Response) => {
             data: response.data,
         });
     } catch (error: any) {
-        log.info(error);
+        console.log('OTP error =====', error);
         res.status(500).json({ message: error.message });
     }
 };

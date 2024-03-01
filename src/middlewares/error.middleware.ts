@@ -1,4 +1,4 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 const notFound = (req: Request, res: Response, next: NextFunction) => {
     const error = new Error(`Not Found - ${req.originalUrl}`);
@@ -13,6 +13,7 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
         message: err.message,
         stack: process.env.NODE_ENV === 'production' ? null : err.stack,
     });
+    next();
 };
 
 export { errorHandler, notFound };

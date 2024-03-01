@@ -2,6 +2,7 @@ import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import { ApiError } from './apiError';
 import log from '../utility/logger';
+import { IDataStoredInToken } from '../dto/index';
 
 // verifying authorization token and storing it in the req.user
 export const ValidateJwt = async (req: Request) => {
@@ -43,4 +44,16 @@ export const verifyAuthTokens = async (token: string) => {
             error: new ApiError('Error verifying auth tokens', error as Error),
         };
     }
+};
+
+export const createAccessToken = async (userId: string, userEmail: string) => {
+    const data: IDataStoredInToken = { userId, userEmail };
+    const result = await signToken(data);
+    return result;
+};
+
+export const createRefreshToken = async (userId: string, userEmail: string) => {
+    const data: IDataStoredInToken = { userId, userEmail };
+    const result = await signToken(data);
+    return result;
 };
