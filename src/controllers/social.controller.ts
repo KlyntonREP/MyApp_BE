@@ -1,8 +1,6 @@
 // import { Request, Response, NextFunction } from 'express';
-import {
-    // googleAuthService,
-} from "../services/index";
-
+import {} from // googleAuthService,
+'../services/index';
 
 /**
  * @description Get Google Credentials

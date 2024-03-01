@@ -1,23 +1,22 @@
-import { NextFunction, Request, Response } from "express";
-import { ValidateJwt } from "../utility/jwtUtility";
+import { NextFunction, Request, Response } from 'express';
+import { ValidateJwt } from '../utility/jwtUtility';
 
 declare global {
-  namespace Express {
-    interface Request{
-      loggedInUser?: any;
+    namespace Express {
+        interface Request {
+            loggedInUser?: any;
+        }
     }
-  }
 }
 
-export const Authenticate = async ( req: Request, res: Response, next: NextFunction ) => {
-  const validate = await ValidateJwt(req);
+export const Authenticate = async (req: Request, res: Response, next: NextFunction) => {
+    const validate = await ValidateJwt(req);
 
-  if (validate) {
-    next();
-  } else {
-    return res.status(400).json({
-      message: "User Not Authorized",
-    });
-  }
+    if (validate) {
+        next();
+    } else {
+        return res.status(400).json({
+            message: 'User Not Authorized',
+        });
+    }
 };
-

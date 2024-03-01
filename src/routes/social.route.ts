@@ -16,11 +16,11 @@ const router = express.Router();
 
 //   })
 
-  router.get('/success', (req, res) => {
-    res.send('Success!')
-  })
-  router.get('/failed', (req, res) => {
-    res.send('Something went wrong')
-  })
+router.get('/success', (req, res) => {
+    res.send('Success!');
+});
+router.get('/failed', (req, res) => {
+    res.send('Something went wrong');
+});
 
 export default router;

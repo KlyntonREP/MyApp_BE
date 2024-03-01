@@ -6,13 +6,12 @@ import {
     getMessagesController,
     getUserChatsController,
     getUsersChatController,
-    sendMessageController
+    sendMessageController,
 } from '../controllers/chat.controller';
-
 
 const router = express.Router();
 // initiate a chat
-router.post('/create-chat/:counterPartyId', Authenticate, createChatController)
+router.post('/create-chat/:counterPartyId', Authenticate, createChatController);
 
 // gets all the chats of a logged in user
 router.get('/user-chats', Authenticate, getUserChatsController);
