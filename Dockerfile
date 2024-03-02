@@ -1,5 +1,6 @@
 FROM node:18-alpine
 WORKDIR /app
+VOLUME  /etc/letsencrypt:/etc/letsencrypt
 EXPOSE 3030
 COPY . ./
 RUN npm ci --include=prod
