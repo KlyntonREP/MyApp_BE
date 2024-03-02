@@ -1,5 +1,5 @@
 FROM node:18-alpine
-WORKDIR /app
+WORKDIR /.
 VOLUME  /etc/letsencrypt/live/api.gettrill.com/privkey.pem:/etc/letsencrypt/live/api.gettrill.com/privkey.pem
 VOLUME  /etc/letsencrypt/live/api.gettrill.com/fullchain.pem:/etc/letsencrypt/live/api.gettrill.com/fullchain.pem
 EXPOSE 3030
