@@ -10,10 +10,10 @@ import https from 'https';
 
 dotenv.config();
 
-const privateKey = process.env.NODE_ENV === 'production' ? fs.readFileSync('../privkey.pem', 'utf8') : '';
-// const privateKey = process.env.NODE_ENV === 'production' ? fs.readFileSync('/etc/letsencrypt/live/api.gettrill.com/privkey.pem', 'utf8') : '';
+// const privateKey = process.env.NODE_ENV === 'production' ? fs.readFileSync('../privkey.pem', 'utf8') : '';
+// // const privateKey = process.env.NODE_ENV === 'production' ? fs.readFileSync('/etc/letsencrypt/live/api.gettrill.com/privkey.pem', 'utf8') : '';
 
-const certificate = process.env.NODE_ENV === 'production' ? fs.readFileSync('../fullchain.pem', 'utf8') : '';
+// const certificate = process.env.NODE_ENV === 'production' ? fs.readFileSync('/etc/letsencrypt/live/api.gettrill.com/fullchain.pem', 'utf8') : '';
 
 const StartServer = async () => {
     const app = express();
@@ -25,18 +25,18 @@ const StartServer = async () => {
     const PORT = process.env.PORT || 1335;
 
     // Starting either http or https server
-    const server =
-        process.env.NODE_ENV === 'production'
-            ? https.createServer(
-                  {
-                      key: privateKey,
-                      cert: certificate,
-                  },
-                  app,
-              )
-            : http.createServer(app);
+    // const server =
+    //     process.env.NODE_ENV === 'production'
+    //         ? https.createServer(
+    //               {
+    //                   key: privateKey,
+    //                   cert: certificate,
+    //               },
+    //               app,
+    //           )
+    //         : http.createServer(app);
 
-    server.listen(PORT, () => {
+    app.listen(PORT, () => {
         log.info(`Server listening on: http://localhost:${PORT}`);
         log.info(`Swagger doc listening on: http://localhost:${PORT}/api/docs`);
     });
