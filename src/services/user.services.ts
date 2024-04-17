@@ -111,13 +111,12 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
             };
         }
         const user: any = await UserModel.findOne({ email: verifyEmail.userEmail });
-        if (user.status === 'Active' && user.IsEmailVerified === true) {
+        if (user.IsEmailVerified === true) {
             return {
                 status: 401,
                 message: 'This Email Is Already verified',
             };
         }
-        user.status = 'Active';
         user.isEmailVerified = true;
         await user.save();
 

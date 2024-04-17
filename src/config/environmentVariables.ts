@@ -1,6 +1,5 @@
-import dotenv from "dotenv";
-dotenv.config()
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default {
     PORT: process.env.PORT,
@@ -16,4 +15,4 @@ export default {
     AWS_BUCKET_REGION: process.env.AWS_BUCKET_REGION,
     AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
     AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
-}
+};

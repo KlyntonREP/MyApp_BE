@@ -1,4 +1,4 @@
-export interface ISendMessage{
+export interface ISendMessage {
     text: string;
     chatId: string;
     senderId: string;
@@ -10,15 +10,15 @@ export interface ISendMessage{
     isGroup: boolean;
 }
 
-export interface ICreateChat{
+export interface ICreateChat {
     text: string;
     isMedia: boolean;
     media?: string;
     mediaType?: 'image' | 'pdf' | 'audio';
     messageUniqueId: string;
 }
-export interface ICreateGroup{
-    users: string[],
+export interface ICreateGroup {
+    users: string[];
     isGroup: boolean;
     groupName: string;
 }

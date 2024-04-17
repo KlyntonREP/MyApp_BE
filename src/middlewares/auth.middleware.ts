@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ValidateJwt } from '../utility/jwtUtility';
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
         interface Request {
             loggedInUser?: any;

@@ -19,7 +19,7 @@ import {
 
 import { createPostBody, createPost, getPosts } from './post.docs';
 
-import { createChatBody, createChat, getUserChats, getUsersChat, sendMessage, getMessages, createGroup } from './chat.docs';
+// import { createChatBody, createChat, getUserChats, getUsersChat, sendMessage, getMessages, createGroup } from './chat.docs';
 // options object for swaggerjs
 export const options = {
     definition: {
@@ -85,24 +85,24 @@ export const options = {
             },
 
             // for chats
-            '/chats/create-chat/{counterpartyId}': {
-                post: createChat,
-            },
-            '/chats/user-chats': {
-                get: getUserChats,
-            },
-            '/chats/users-chat/{counterPartyId}': {
-                get: getUsersChat,
-            },
-            '/chats/send-message': {
-                post: sendMessage,
-            },
-            '/chats/get-messages/{chatId}': {
-                get: getMessages,
-            },
-            '/chats/create-group': {
-                post: createGroup,
-            },
+            // '/chats/create-chat/{counterpartyId}': {
+            //     post: createChat,
+            // },
+            // '/chats/user-chats': {
+            //     get: getUserChats,
+            // },
+            // '/chats/users-chat/{counterPartyId}': {
+            //     get: getUsersChat,
+            // },
+            // '/chats/send-message': {
+            //     post: sendMessage,
+            // },
+            // '/chats/get-messages/{chatId}': {
+            //     get: getMessages,
+            // },
+            // '/chats/create-group': {
+            //     post: createGroup,
+            // },
         },
         components: {
             securitySchemes: {
@@ -115,7 +115,7 @@ export const options = {
             schemas: {
                 createUserBody,
                 createPostBody,
-                createChatBody,
+                // createChatBody,
             },
         },
         servers: [

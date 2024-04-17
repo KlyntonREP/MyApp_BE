@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { StatusEnum } from '../common/enums';
 
 interface UserDoc extends Document {
     email: string;
@@ -73,8 +74,7 @@ const UserSchema: Schema = new mongoose.Schema<UserDoc>(
         },
         status: {
             type: String,
-            enum: ['Pending', 'Active'],
-            default: 'Pending',
+            enum: StatusEnum,
         },
         followers: {
             type: [String],

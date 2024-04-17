@@ -7,7 +7,7 @@ import hpp from 'hpp';
 import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from '../docs/swagger';
-import { userRoutes, postRoutes, socialRoutes, chatRoutes } from '../routes/index';
+import { userRoutes, postRoutes, socialRoutes } from '../routes/index';
 import session from 'express-session';
 
 export default async (app: Application) => {
@@ -47,7 +47,7 @@ export default async (app: Application) => {
     app.use('/', socialRoutes);
     app.use('/api/user', userRoutes);
     app.use('/api/post', postRoutes);
-    app.use('/api/chat', chatRoutes);
+    // app.use('/api/chat', chatRoutes);
 
     // Error handler
     app.use(notFound);

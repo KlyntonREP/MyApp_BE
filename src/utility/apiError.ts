@@ -3,12 +3,12 @@ export class ApiError extends Error {
     status: false;
 
     constructor(message: string, data?: object) {
-      super(message);
-      this.data = data;
-      this.status = false;
+        super(message);
+        this.data = data;
+        this.status = false;
     }
 
     addMeta(data: object) {
-      this.data = data;
+        this.data = data;
     }
-  }
+}
