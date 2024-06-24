@@ -20,3 +20,4 @@ app.listen(PORT, () => {
 });
 
 export default app;
+console.log('this');
