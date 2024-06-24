@@ -9,7 +9,9 @@
         "watch": "tsc -w",
         "prestart": "npm run build",
         "start:prod": "cross-env NODE_ENV=production node dist/server.js",
-        "dev": "concurrently --kill-others \"npm run watch\" \"nodemon .\""
+        "dev": "concurrently --kill-others \"npm run watch\" \"nodemon .\"",
+        "vercel-build": "echo hello"
+
     },
     "author": "",
     "license": "ISC",
