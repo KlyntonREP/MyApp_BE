@@ -1,12 +1,15 @@
 {
     "version": 2,
-    "name": "Trill_BE",
     "builds": [
-      { "src": "./src/server.ts", "use": "@vercel/node" }
+     {
+         "src": "./src/server.ts",
+         "use": "@vercel/node"
+     }
     ],
     "routes": [
-        { "src": "/healthcheck", "dest": "/"},
-
-        {"src": "/api/docs", "dest": "/"}
+     {
+         "src": "/(.*)",
+         "dest": "/"
+     }
     ]
-  }
+ }
