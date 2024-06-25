@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
 import log from '../utility/logger';
+import config from './environmentVariables';
 
 mongoose.set('strictQuery', false);
 
 const connectDB = async () => {
     try {
-        const URI: any = process.env.MONGO_URI as string;
+        const URI: any = config.DB_URL as string;
         await mongoose.connect(URI);
 
         log.info(`MongoDB Connected`);
