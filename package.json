@@ -11,7 +11,6 @@
         "start:prod": "cross-env NODE_ENV=production node dist/server.js",
         "dev": "concurrently --kill-others \"npm run watch\" \"nodemon .\"",
         "vercel-build": "echo hello"
-
     },
     "author": "",
     "license": "ISC",
@@ -38,6 +37,7 @@
         "helmet": "^7.0.0",
         "hpp": "^0.2.3",
         "jsonwebtoken": "^9.0.1",
+        "memorystore": "^1.6.7",
         "mime-types": "^2.1.35",
         "mongodb": "^5.8.1",
         "mongoose": "^7.4.5",

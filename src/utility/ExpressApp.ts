@@ -9,6 +9,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import { options } from '../docs/swagger';
 import { userRoutes, postRoutes, socialRoutes } from '../routes/index';
 import session from 'express-session';
+import MemoryStore from 'memorystore';
 
 export default async (app: Application) => {
     app.use(express.json());
@@ -34,16 +35,17 @@ export default async (app: Application) => {
         res.sendStatus(200);
     });
 
+    const MemStore = MemoryStore(session);
+
     app.use(
         session({
+            store: new MemStore({
+                checkPeriod: 86400000, // prune expired entries every 24h
+            }),
             secret: 'somethingsecretgoeshere',
             resave: false,
             saveUninitialized: true,
-
-            cookie: {
-                secure: true,
-                maxAge: 60000,
-            },
+            cookie: { maxAge: 86400000 }, // 24 hours
         }),
     );
 
