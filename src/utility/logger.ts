@@ -19,7 +19,7 @@ const transport = pino.transport({
     ],
 });
 
-export const logger = pino(
+const log = pino(
     {
         level: process.env.PINO_LOG_LEVEL || 'info',
 
@@ -27,3 +27,5 @@ export const logger = pino(
     },
     transport,
 );
+
+export default log;
