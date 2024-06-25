@@ -1,31 +1,18 @@
-import pino from 'pino';
-import path from 'path';
+import logger from 'pino';
+import dayjs from 'dayjs';
+import 'pino-pretty';
 
-const logsPath = path.resolve('src', 'logs');
-
-const transport = pino.transport({
-    targets: [
-        {
-            target: 'pino/file',
-            options: { destination: `${logsPath}/server.log` },
-            level: process.env.PINO_LOG_LEVEL || 'info',
+const log = logger({
+    transport: {
+        target: 'pino-pretty',
+        options: {
+            colorize: true,
         },
-        {
-            target: 'pino-pretty',
-            options: {
-                colorize: true,
-            },
-        },
-    ],
-});
-
-const log = pino(
-    {
-        level: process.env.PINO_LOG_LEVEL || 'info',
-
-        timestamp: pino.stdTimeFunctions.isoTime,
     },
-    transport,
-);
+    base: {
+        pid: false,
+    },
+    timestamp: () => `,"time":"${dayjs().format()}"`,
+});
 
 export default log;
