@@ -39,7 +39,11 @@ export default async (app: Application) => {
             secret: 'somethingsecretgoeshere',
             resave: false,
             saveUninitialized: true,
-            cookie: { secure: true },
+
+            cookie: {
+                secure: true,
+                maxAge: 60000,
+            },
         }),
     );
 
