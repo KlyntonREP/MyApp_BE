@@ -31,19 +31,18 @@ export default async (app: Application) => {
     // const specs = swaggerJsDoc(options);
     // app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
-    app.use(express.static(pathToSwaggerUi));
+    const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css';
+
     // Swagger setup
-    const specs = swaggerJsDoc(options);
-    const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.css';
+    const swaggerSpec = swaggerJsDoc(options);
+
     app.use(
         '/api-docs',
-        express.static('node_modules/swagger-ui-dist/', { index: false }),
         swaggerUI.serve,
-        swaggerUI.setup(specs, {
+        swaggerUI.setup(swaggerSpec, {
+            customCss:
+                '.swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }',
             customCssUrl: CSS_URL,
-            customCss: '.opblock-summary-path-description-wrapper { width: 100%; margin-left: 10px; display: flex; align-items: center; }',
         }),
     );
 
