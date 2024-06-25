@@ -28,8 +28,24 @@ export default async (app: Application) => {
     app.use(hpp());
 
     // setting up swagger doc
+    // const specs = swaggerJsDoc(options);
+    // app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
+    app.use(express.static(pathToSwaggerUi));
+    // Swagger setup
     const specs = swaggerJsDoc(options);
-    app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
+    const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.css';
+    app.use(
+        '/api-docs',
+        express.static('node_modules/swagger-ui-dist/', { index: false }),
+        swaggerUI.serve,
+        swaggerUI.setup(specs, {
+            customCssUrl: CSS_URL,
+            customCss: '.opblock-summary-path-description-wrapper { width: 100%; margin-left: 10px; display: flex; align-items: center; }',
+        }),
+    );
 
     app.get('/healthcheck', (req: Request, res: Response) => {
         res.sendStatus(200);
