@@ -1,5 +1,5 @@
 import { UserModel, PostModel } from '../models/index';
-import { uploadFile } from '../utility/s3';
+import { uploadImageToS3 } from '../utility/s3';
 import { ICreatePost } from '../dto';
 import log from '../utility/logger';
 
@@ -13,13 +13,13 @@ export const createPostService = async (payload: ICreatePost, user: string, file
         }
         if (files.image) {
             const imageFile = files.image[0]; // Assuming the image field contains a single file
-            imageUrl = await uploadFile(imageFile, 'images'); // Process the files as needed by uploading them to AWS S3 and generate URLs
+            imageUrl = await uploadImageToS3(imageFile); // Process the files as needed by uploading them to AWS S3 and generate URLs
         } else {
             log.info('No image is being sent');
         }
         if (files.video) {
             const videoFile = files.video[0]; // Assuming the video field contains a single file
-            videoUrl = await uploadFile(videoFile, 'videos'); // Process the files as needed by uploading them to AWS S3 and generate URLs
+            videoUrl = await uploadImageToS3(videoFile); // Process the files as needed by uploading them to AWS S3 and generate URLs
         } else {
             log.info('No video is being sent');
         }

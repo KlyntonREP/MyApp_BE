@@ -28,7 +28,7 @@ export const upload = multer({
 // // Configure AWS S3
 
 export const uploadImageToS3 = async (file: Express.Multer.File): Promise<string> => {
-    const key = `images/uploads/${Date.now()}-${file.originalname}`;
+    const key = `images/upload/${Date.now()}-${file.originalname}`;
     await s3
         .upload({
             Bucket: env.AWS_BUCKET_NAME!,
