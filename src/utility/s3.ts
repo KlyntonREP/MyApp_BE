@@ -1,105 +1,62 @@
-import * as AWS from 'aws-sdk';
-import * as mimetypes from 'mime-types';
-import config from '../config/environmentVariables';
-import fs from 'fs';
-import { promisify } from 'util';
+import aws from 'aws-sdk';
+import env from '../config/environmentVariables';
+import multer, { FileFilterCallback } from 'multer';
+import { HttpException } from './http.exception';
+import { Request } from 'express';
 import log from '../utility/logger';
 
-const readFile = promisify(fs.readFile);
-
-const bucketName = config.AWS_BUCKET_NAME;
-const region = config.AWS_BUCKET_REGION;
-const accessKeyId = config.AWS_ACCESS_KEY;
-const secretAccessKey = config.AWS_SECRET_KEY;
-
-const s3Client = new AWS.S3({
-    region,
-    accessKeyId,
-    secretAccessKey,
+const s3 = new aws.S3({
+    accessKeyId: `${env.AWS_ACCESS_KEY}`,
+    secretAccessKey: `${env.AWS_SECRET_KEY}`,
+    region: `${env.AWS_BUCKET_REGION}`,
 });
 
-// generating file url in this block of code
-const generateFileUrl = async (key: string, folder: string, contentType: string): Promise<string> => {
-    const fileExtension = mimetypes.extension(contentType);
+export const upload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: (_: Request, file: Express.Multer.File, callback: FileFilterCallback) => {
+        // Define the allowed extension
+        const allowedFileMimeTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
 
-    try {
-        const url = await new Promise<string>((resolve, reject) => {
-            s3Client.getSignedUrl(
-                'getObject',
-                {
-                    Bucket: bucketName,
-                    Key: `${folder}/${key}.${fileExtension}`,
-                    Expires: 3600,
-                },
-                (err: Error | AWS.AWSError, url: string) => {
-                    if (err) {
-                        console.error(err + ':' + "Couldn't generate file url!");
-                        reject(err);
-                    } else {
-                        resolve(url);
-                    }
-                },
-            );
-        });
+        if (allowedFileMimeTypes.includes(file.mimetype)) return callback(null, true);
+        callback(new HttpException(`Error: File type: ${file.mimetype} not allowed!`, 400));
+    },
+    limits: {
+        fileSize: 1024 * 1024 * 10, // 10mb file size
+    },
+});
 
-        if (!url) {
-            throw new Error('Failed to generate file URL');
-        }
+// // Configure AWS S3
 
-        return url;
-    } catch (error) {
-        console.error('Error generating file URL:', error);
-        throw new Error('Failed to generate file URL');
-    }
+export const uploadImageToS3 = async (file: Express.Multer.File): Promise<string> => {
+    const key = `images/uploads/${Date.now()}-${file.originalname}`;
+    await s3
+        .upload({
+            Bucket: env.AWS_BUCKET_NAME!,
+            Key: key,
+            Body: file.buffer,
+            ContentType: file.mimetype,
+        })
+        .promise();
+    return `https://${env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
 };
 
-// uploading the file to AWS s3 bucket
-export const uploadFile = async (file: Express.Multer.File, folder: string): Promise<string> => {
-    try {
-        const fileExtension = mimetypes.extension(file.mimetype);
-        const fileName = `${file.originalname}.${fileExtension}`;
-
-        const fileBuffer = await readFile(file.path); // Read the file asynchronously using promisified fs.readFil
-
-        const uploadParams: AWS.S3.PutObjectRequest = {
-            Bucket: bucketName as string,
-            Key: `${folder}/${fileName}`,
-            Body: fileBuffer,
-            ContentType: file.mimetype,
-        };
-
-        const uploadResult = await s3Client.upload(uploadParams).promise();
-        if (!uploadResult.Key) {
-            throw new Error('Failed to upload file');
-        }
-
-        const fileUrl = await generateFileUrl(fileName, folder, file.mimetype);
-        log.info(fileUrl);
-        return fileUrl;
-    } catch (error) {
-        console.error('Error uploading file:', error);
-        throw new Error('Failed to upload file');
-    }
+export const uploadMultipleImages = async (files: Express.Multer.File[]): Promise<string[]> => {
+    return await Promise.all(files?.map(uploadImageToS3));
 };
 
 //   deleting the image file from AWS s3 bucket
 export const deleteFileFromS3 = async (fileUrl: string) => {
     try {
-        const fileKey = extractFileKeyFromUrl(fileUrl);
-        const params: AWS.S3.DeleteObjectRequest = {
-            Bucket: bucketName as string,
-            Key: fileKey,
-        };
-        await s3Client.deleteObject(params).promise();
-        log.info(`File ${fileKey} deleted from S3 bucket ${bucketName}`);
+        if (!fileUrl.includes('.s3.amazonaws.com/')) return;
+        s3.deleteObject({
+            Bucket: env.AWS_BUCKET_NAME!,
+            Key: fileUrl.split('.s3.amazonaws.com/')[1],
+        })
+            .promise()
+            .then(() => {
+                log.info(`File: ${fileUrl} deleted from S3 bucket`);
+            });
     } catch (error) {
         console.error('Error deleting file from S3:', error);
-        throw new Error('Failed to delete file from S3');
     }
-};
-
-const extractFileKeyFromUrl = (fileUrl: string): string => {
-    const urlParts = fileUrl.split('/');
-    const fileKey = urlParts[urlParts.length - 1];
-    return fileKey;
 };
