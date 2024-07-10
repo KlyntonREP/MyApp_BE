@@ -28,23 +28,8 @@ export default async (app: Application) => {
     app.use(hpp());
 
     // setting up swagger doc
-    // const specs = swaggerJsDoc(options);
-    // app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
-
-    const CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css';
-
-    // Swagger setup
-    const swaggerSpec = swaggerJsDoc(options);
-
-    app.use(
-        '/api-docs',
-        swaggerUI.serve,
-        swaggerUI.setup(swaggerSpec, {
-            customCss:
-                '.swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }',
-            customCssUrl: CSS_URL,
-        }),
-    );
+    const specs = swaggerJsDoc(options);
+    app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(specs));
 
     app.get('/healthcheck', (req: Request, res: Response) => {
         res.sendStatus(200);

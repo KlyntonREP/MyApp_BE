@@ -166,7 +166,7 @@ export const resetPassController = async (req: Request, res: Response) => {
  */
 export const updateProfilerController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.id;
+        const user: string = await req.loggedInUser.userId;
         const payload = req.body as IEditProfile;
         const response: any = await updateProfileService(user, payload);
         return res.status(response.status).json({
@@ -188,7 +188,7 @@ export const updateProfilerController = async (req: Request, res: Response) => {
  */
 export const editEmailController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.id;
+        const user: string = await req.loggedInUser.userId;
         const payload = req.body as IEditEmail;
         const response: any = await editEmailService(user, payload);
         return res.status(response.status).json({
@@ -210,7 +210,7 @@ export const editEmailController = async (req: Request, res: Response) => {
  */
 export const changeEmailController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.id;
+        const user: string = await req.loggedInUser.userId;
         const payload = req.body as IChangeEmail;
         const response: any = await changeEmailService(user, payload);
         return res.status(response.status).json({
@@ -232,7 +232,7 @@ export const changeEmailController = async (req: Request, res: Response) => {
  */
 export const getProfileController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.id;
+        const user: string = await req.loggedInUser.userId;
         const response: any = await getProfileService(user);
         return res.status(response.status).json({
             status: response.status,
@@ -272,7 +272,7 @@ export const getUserByIdController = async (req: Request, res: Response) => {
  */
 export const followController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.id;
+        const user: string = await req.loggedInUser.userId;
         const { followId: followId } = req.params;
         const response: any = await followService(user, followId);
         return res.status(response.status).json({
@@ -294,7 +294,7 @@ export const followController = async (req: Request, res: Response) => {
 
 export const unfollowController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.id;
+        const user: string = await req.loggedInUser.userId;
         const { unfollowId: unfollowId } = req.params;
         const response: any = await unfollowService(user, unfollowId);
         return res.status(response.status).json({

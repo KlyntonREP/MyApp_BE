@@ -187,9 +187,9 @@ export const forgotPassEmailService = async (payload: IUserForgotPassEmail) => {
         const name = `${user?.firstName} ${user?.lastName}`;
         const message = `<h1>Forgot Password</h1>
         <h2>Hello ${user?.firstName} ${user?.lastName}</h2>
-        <p>A reset password action wan initiated using your email. If the action was your doing please input the code below.</p>
+        <p>A reset password action was initiated using your email. If the action was your doing please input the code below.</p>
         <p>Verification Code: ${otp}</p>`;
-        const subject = 'Please confirm your account';
+        const subject = 'Password reset';
 
         await sendMail(name, user?.email, subject, message);
         if (sendMail != null) {
@@ -260,30 +260,31 @@ export const resetPassService = async (payload: IUserResetPass) => {
 
 export const updateProfileService = async (user: string, payload: IEditProfile) => {
     try {
-        const firstName = payload.fullName?.split(' ')[0];
-        const lastName = payload.fullName?.split(' ')[1];
-
         const User = await UserModel.findById(user).exec();
         if (!User) {
             return { status: 401, message: 'User Does Exist' };
         }
-        User.firstName = firstName || User.firstName;
-        User.lastName = lastName || User.lastName;
+
+        if (payload.userName && payload.userName !== User.userName) {
+            const findUserName = await UserModel.findOne({ userName: payload.userName });
+            if (findUserName) {
+                return { status: 400, message: 'This Username Has Already Been Taken' };
+            }
+        }
+
+        User.firstName = payload.firstName || User.firstName;
+        User.lastName = payload.lastName || User.lastName;
         User.userName = payload.userName || User.userName;
         User.gender = payload.gender || User.gender;
         User.bio = payload.bio || User.bio;
         User.email = payload.email || User.email;
         User.phoneNumber = payload.phoneNumber || User.phoneNumber;
 
-        const findUserName = await UserModel.findOne({ userName: payload.userName });
-        if (findUserName) {
-            return { status: 400, message: 'This User Has Already Been Taken' };
-        }
-
         await User.save();
         User.password = undefined;
-        return { status: 200, message: 'User Profile Updated Successfully', data: user };
+        return { status: 200, message: 'User Profile Updated Successfully', data: User };
     } catch (error) {
+        console.log(error);
         return { status: 500, message: 'Internal Server Error', data: error };
     }
 };
@@ -306,7 +307,7 @@ export const editEmailService = async (user: string, payload: IEditEmail) => {
         Else input the code below to continue</p>
         <p>Verification Code: ${otp}</p>
         <p>This Code expires in 5mins</p>`;
-        const subject = 'Email Change Code';
+        const subject = 'Edit Email';
 
         await sendMail(name, User.email, subject, message);
         if (sendMail != null) {
@@ -326,25 +327,18 @@ export const changeEmailService = async (user: string, payload: IChangeEmail) =>
         }
         const User: any = await UserModel.findById(user).exec();
         const Otp: any = await OtpModel.findOne({ userEmail: User.email });
-        log.info('User Otp', Otp);
-        if (!Otp || Otp === null) {
-            return {
-                status: 400,
-                message: 'Code Has Expired Please Request For A New One',
-            };
-        }
+
+        if (!Otp || Otp === null) return { status: 400, message: 'Code Has Expired Please Request For A New One' };
+
         const rightOtp = await bcrypt.compare(otp, Otp.otp);
-        log.info('Right OTP: ', rightOtp);
-        if (!rightOtp) {
-            return {
-                status: 401,
-                message: 'Invalid OTP',
-            };
-        }
-        User.email = email;
-        User.save();
-        User.password = undefined;
-        return { status: 200, message: 'Email Changed Successfully', data: User };
+
+        if (!rightOtp) return { status: 401, message: 'Invalid OTP' };
+
+        await UserModel.findOneAndUpdate({ _id: user }, { email }, { new: true });
+
+        // Fetch the updated user to return
+        const updatedUser = await UserModel.findById(user).select('-password').exec();
+        return { status: 200, message: 'Email Changed Successfully', data: updatedUser };
     } catch (error) {
         log.info(error);
         return { status: 500, message: 'Internal Server Error', data: error };
@@ -389,12 +383,13 @@ export const followService = async (user: string, followId: string) => {
             return { status: 400, message: 'Already Following This User. Cannot Follow User Twice' };
         }
 
-        followProfile.followers.push(user);
-        User.following.push(followId);
-        followProfile.save();
-        User.save();
-        User.password = undefined;
-        return { status: 200, message: 'Followed User Successfuly', data: User };
+        await UserModel.updateOne({ _id: user }, { $push: { following: followId } });
+
+        await UserModel.updateOne({ _id: followId }, { $push: { followers: user } });
+
+        // Fetch the updated user document without the password field
+        const updatedUser = await UserModel.findById(user).select('-password').exec();
+        return { status: 200, message: 'Followed User Successfuly', data: updatedUser };
     } catch (error) {
         return { status: 500, message: 'Internal Server Error', data: error };
     }
@@ -402,24 +397,31 @@ export const followService = async (user: string, followId: string) => {
 
 export const unfollowService = async (user: string, unfollowId: string) => {
     try {
+        const User: any = await UserModel.findById(user).exec();
         if (!user) {
             return { status: 404, message: 'User Not Found' };
         }
-        const unfollowProfile: any = await UserModel.findById(unfollowId).exec();
+
+        const unfollowProfile = await UserModel.findById(unfollowId).exec();
         if (!unfollowProfile) {
             return { status: 401, message: "Can't Unfollow This User, They Do Not Exist" };
         }
-        const User: any = await UserModel.findById(user).exec();
-        if (User.following.includes(unfollowId)) {
-            User.following.pull(unfollowId);
-            unfollowProfile.followers.pull(user);
-            unfollowProfile.save();
-            User.save();
-            User.password = undefined;
-            return { status: 200, message: 'User Unfollowed Successfully', data: User };
+
+        if (!User.following.includes(unfollowId)) {
+            return { status: 400, message: "Can't Unfollow A User You Are Not Following" };
         }
-        return { status: 400, message: "Can't Unfollow A User You Are Not Following" };
+
+        // Update the following and followers lists
+        await UserModel.updateOne({ _id: user }, { $pull: { following: unfollowId } });
+
+        await UserModel.updateOne({ _id: unfollowId }, { $pull: { followers: user } });
+
+        // Fetch the updated user document without the password field
+        const updatedUser = await UserModel.findById(user).select('-password').exec();
+
+        return { status: 200, message: 'User Unfollowed Successfully', data: updatedUser };
     } catch (error) {
+        console.error(error);
         return { status: 500, message: 'Internal Server Error', data: error };
     }
 };

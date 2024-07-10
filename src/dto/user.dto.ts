@@ -57,7 +57,8 @@ export interface IUserForgotPassPhone {
 }
 
 export interface IEditProfile {
-    fullName?: string;
+    firstName?: string;
+    lastName?: string;
     userName?: string;
     gender?: string;
     bio?: string;
