@@ -1,9 +1,9 @@
 import { UserModel, PostModel } from '../models/index';
 import { uploadImageToS3 } from '../utility/s3';
-import { ICreatePost } from '../dto';
+import { CreatePostDto } from '../dto';
 import log from '../utility/logger';
 
-export const createPostService = async (payload: ICreatePost, user: string, files: any) => {
+export const createPostService = async (payload: CreatePostDto, user: string, files: any) => {
     try {
         const { caption } = payload;
         let imageUrl;
@@ -44,6 +44,7 @@ export const createPostService = async (payload: ICreatePost, user: string, file
         // Send the response with the created blog post
         return { status: 201, message: 'Post created Successfully', data: post };
     } catch (error) {
+        console.log(error);
         return { status: 500, message: 'Internal Server Error', data: error };
     }
 };

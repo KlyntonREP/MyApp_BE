@@ -1,24 +1,25 @@
 import { UserModel, OtpModel } from '../models/index';
 import {
-    IUserRegisterInput,
-    IEmailVerify,
-    IUserLogin,
-    IUserResendcode,
-    IUserForgotPassEmail,
-    IUserResetPass,
-    IUserForgotPassPhone,
-    IEditProfile,
-    IEditEmail,
-    IChangeEmail,
+    RegisterUserDto,
+    EmailVerifyDto,
+    LoginDto,
+    ResendcodeDto,
+    ForgotPassEmailDto,
+    ResetPassDto,
+    ForgotPassPhoneDto,
+    EditProfileDto,
+    EditEmailDto,
+    ChangeEmailDto,
 } from '../dto';
 import { GenCode, generateAndStoreOTP, sendMail } from '../utility/helpers';
 import bcrypt from 'bcryptjs';
 import twilio from 'twilio';
 import config from '../config/environmentVariables';
 import log from '../utility/logger';
-import { createAccessToken, createRefreshToken } from '../utility/jwtUtility';
+import { createAccessToken, createRefreshToken, verifyRefreshToken } from '../utility/jwtUtility';
+import { UserDoc } from '../models/user.model';
 
-export const createUserService = async (payload: IUserRegisterInput['body']) => {
+export const createUserService = async (payload: RegisterUserDto) => {
     try {
         const { firstName, lastName, email, password, userName, phone, confirmPassword } = payload;
         const userExist = await UserModel.findOne({ email });
@@ -62,7 +63,7 @@ export const createUserService = async (payload: IUserRegisterInput['body']) => 
     }
 };
 
-export const resendCodeService = async (payload: IUserResendcode) => {
+export const resendCodeService = async (payload: ResendcodeDto) => {
     try {
         const { email } = payload;
         const user = await UserModel.findOne({ email });
@@ -92,7 +93,7 @@ export const resendCodeService = async (payload: IUserResendcode) => {
     }
 };
 
-export const verifyEmailService = async (payload: IEmailVerify) => {
+export const verifyEmailService = async (payload: EmailVerifyDto) => {
     try {
         const { otp, email } = payload;
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
@@ -127,7 +128,7 @@ export const verifyEmailService = async (payload: IEmailVerify) => {
     }
 };
 
-export const UserLoginService = async (payload: IUserLogin) => {
+export const UserLoginService = async (payload: LoginDto) => {
     try {
         const { email, password } = payload;
         const user: any = await UserModel.findOne({ email });
@@ -148,14 +149,10 @@ export const UserLoginService = async (payload: IUserLogin) => {
                 message: 'Your account is not active, Please activate your account',
             };
 
-        const accessToken = await createAccessToken(user?.id, user?.email);
+        const accessToken = createAccessToken(user?._id, user?.email);
+        const refreshToken = createRefreshToken(user?._id, user?.email);
 
-        const refreshToken = await createRefreshToken(user?.id, user?.email);
-
-        await UserModel.updateOne({ _id: user.id }, { refreshToken });
-
-        user.password = undefined;
-        user.refreshToken = undefined;
+        await UserModel.updateOne({ _id: user._id }, { refreshToken: refreshToken });
 
         return {
             status: 200,
@@ -163,7 +160,7 @@ export const UserLoginService = async (payload: IUserLogin) => {
             data: {
                 accessToken,
                 refreshToken,
-                user,
+                user: { ...user.toJSON(), passwordResetToken: undefined, verifyEmailToken: undefined, refreshTokens: undefined, password: undefined },
             },
         };
     } catch (error: any) {
@@ -171,7 +168,7 @@ export const UserLoginService = async (payload: IUserLogin) => {
     }
 };
 
-export const forgotPassEmailService = async (payload: IUserForgotPassEmail) => {
+export const forgotPassEmailService = async (payload: ForgotPassEmailDto) => {
     try {
         const { email } = payload;
         const user: any = await UserModel.findOne({ email });
@@ -201,7 +198,7 @@ export const forgotPassEmailService = async (payload: IUserForgotPassEmail) => {
     }
 };
 
-export const forgotPassPhoneService = async (payload: IUserForgotPassPhone) => {
+export const forgotPassPhoneService = async (payload: ForgotPassPhoneDto) => {
     try {
         const { phoneNumber } = payload;
         const accountSid = config.TWILO_ACCOUNT_SID;
@@ -228,7 +225,7 @@ export const forgotPassPhoneService = async (payload: IUserForgotPassPhone) => {
     }
 };
 
-export const resetPassService = async (payload: IUserResetPass) => {
+export const resetPassService = async (payload: ResetPassDto) => {
     try {
         const { email, code, password, confirmPassword } = payload;
         const verifyEmail: any = await OtpModel.findOne({ userEmail: email });
@@ -258,7 +255,7 @@ export const resetPassService = async (payload: IUserResetPass) => {
     }
 };
 
-export const updateProfileService = async (user: string, payload: IEditProfile) => {
+export const updateProfileService = async (user: string, payload: EditProfileDto) => {
     try {
         const User = await UserModel.findById(user).exec();
         if (!User) {
@@ -277,8 +274,6 @@ export const updateProfileService = async (user: string, payload: IEditProfile) 
         User.userName = payload.userName || User.userName;
         User.gender = payload.gender || User.gender;
         User.bio = payload.bio || User.bio;
-        User.email = payload.email || User.email;
-        User.phoneNumber = payload.phoneNumber || User.phoneNumber;
 
         await User.save();
         User.password = undefined;
@@ -289,7 +284,7 @@ export const updateProfileService = async (user: string, payload: IEditProfile) 
     }
 };
 
-export const editEmailService = async (user: string, payload: IEditEmail) => {
+export const editEmailService = async (user: string, payload: EditEmailDto) => {
     try {
         if (!user) return { status: 404, message: 'User Not Found' };
 
@@ -319,7 +314,7 @@ export const editEmailService = async (user: string, payload: IEditEmail) => {
     }
 };
 
-export const changeEmailService = async (user: string, payload: IChangeEmail) => {
+export const changeEmailService = async (user: string, payload: ChangeEmailDto) => {
     try {
         const { otp, email } = payload;
         if (!user) {
@@ -423,5 +418,46 @@ export const unfollowService = async (user: string, unfollowId: string) => {
     } catch (error) {
         console.error(error);
         return { status: 500, message: 'Internal Server Error', data: error };
+    }
+};
+
+export const getAccessTokenService = async (refreshToken: string) => {
+    let user: UserDoc | null;
+    try {
+        verifyRefreshToken(refreshToken);
+
+        user = await UserModel.findOne({ refreshToken: refreshToken });
+        if (!user) return { status: 400, message: 'Invalid token. Login to get new tokens' };
+
+        verifyRefreshToken(refreshToken);
+        const accessToken = createAccessToken(user?.id, user?.email);
+        const newRefreshToken = createRefreshToken(user?.id, user?.email);
+
+        await UserModel.updateOne({ _id: user?._id }, { refreshTokens: newRefreshToken });
+
+        return { status: 200, message: 'Access token created successfully', data: { accessToken, refreshToken: newRefreshToken } };
+    } catch (error: any) {
+        console.error('Error: ', error);
+
+        if (error.name === 'TokenExpiredError' && user!) {
+            await UserModel.updateOne({ _id: user!._id }, { refreshTokens: undefined! });
+
+            return { status: 401, message: 'Token expired. Please login again' };
+        }
+        return { status: 401, message: 'Invalid Token. Please login again' };
+    }
+};
+
+export const signOutService = async (refreshToken: string) => {
+    try {
+        const user = await UserModel.findOne({ refreshToken: refreshToken });
+
+        if (!user) return { status: 400, message: 'Invalid token.' };
+        await UserModel.updateOne({ _id: user!._id }, { refreshTokens: undefined! });
+
+        return { status: 200, message: 'Signed Out successfully' };
+    } catch (error: any) {
+        console.error('Error in signOutService:', error);
+        return { status: 500, message: 'Internal Server Error' };
     }
 };

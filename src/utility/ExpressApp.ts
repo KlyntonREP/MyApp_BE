@@ -10,6 +10,7 @@ import { options } from '../docs/swagger';
 import { userRoutes, postRoutes, socialRoutes } from '../routes/index';
 import session from 'express-session';
 import MemoryStore from 'memorystore';
+import 'reflect-metadata';
 
 export default async (app: Application) => {
     app.use(express.json());

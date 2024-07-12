@@ -1,82 +1,175 @@
-import { object, string, TypeOf } from 'zod';
+import { IsDefined, IsNumberString, IsOptional, IsString, Length, Matches } from 'class-validator';
 
-export const UserRegisterInputSchema = object({
-    body: object({
-        firstName: string({
-            required_error: 'First Name is required',
-        }),
-        lastName: string({
-            required_error: 'Last Name is required',
-        }),
-        userName: string({
-            required_error: 'Username is required',
-        }),
-        email: string({
-            required_error: 'Email is required',
-        }).email('Not a valid email address'),
-        phone: string({
-            required_error: 'Phone is required',
-        }),
-        password: string({
-            required_error: 'Password is required',
-        }).min(6, 'Password too short - should be 6 chars minimum'),
-        confirmPassword: string({
-            required_error: 'Confirm Password is required',
-        }).min(6, 'Confirm Password too short - should be 6 chars minimum'),
-    }),
-});
+export class RegisterUserDto {
+    @IsString()
+    @IsDefined()
+    firstName!: string;
 
-export interface IEmailVerify {
-    otp: string;
-    email: string;
+    @IsString()
+    @IsDefined()
+    lastName!: string;
+
+    @IsString()
+    @IsDefined()
+    userName!: string;
+
+    @IsString()
+    @IsDefined()
+    @Matches(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        { message: 'Please enter a valid email' },
+    )
+    email!: string;
+
+    @IsNumberString()
+    @Length(13, 13)
+    @IsOptional()
+    phone!: string;
+
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{6,20}$/, {
+        message: 'password must contain the following: a capital letter, a small letter, and a number',
+    })
+    password!: string;
+
+    @IsString()
+    @IsDefined()
+    confirmPassword!: string;
 }
 
-export interface IUserLogin {
+export class EmailVerifyDto {
+    @IsString()
+    @IsDefined()
+    otp!: string;
+
+    @IsString()
+    @IsDefined()
+    email!: string;
+}
+
+export class LoginDto {
+    @IsString()
+    @IsOptional()
+    @Matches(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        { message: 'Please enter a valid email' },
+    )
     email?: string;
+
+    @IsString()
+    @IsOptional()
     username?: string;
-    password: string;
+
+    @IsString()
+    @IsDefined()
+    password!: string;
 }
 
-export interface IUserResendcode {
-    email: string;
+export class ResendcodeDto {
+    @IsString()
+    @IsDefined()
+    @Matches(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        { message: 'Please enter a valid email' },
+    )
+    email!: string;
 }
 
-export interface IUserForgotPassEmail {
-    email: string;
+export class ForgotPassEmailDto {
+    @IsString()
+    @IsDefined()
+    @Matches(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        { message: 'Please enter a valid email' },
+    )
+    email!: string;
 }
 
-export interface IUserResetPass {
-    email: string;
-    code: string;
-    password: string;
-    confirmPassword: string;
+export class ResetPassDto {
+    @IsString()
+    @IsDefined()
+    @Matches(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        { message: 'Please enter a valid email' },
+    )
+    email!: string;
+
+    @IsString()
+    @IsDefined()
+    code!: string;
+
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{6,20}$/, {
+        message: 'password must contain the following: a capital letter, a small letter, and a number',
+    })
+    password!: string;
+
+    @IsString()
+    @IsDefined()
+    confirmPassword!: string;
 }
 
-export interface IUserForgotPassPhone {
-    phoneNumber: string;
+export class ForgotPassPhoneDto {
+    @IsNumberString()
+    @Length(13, 13)
+    @IsOptional()
+    phoneNumber!: string;
 }
 
-export interface IEditProfile {
+export class EditProfileDto {
+    @IsString()
+    @IsOptional()
     firstName?: string;
+
+    @IsString()
+    @IsOptional()
     lastName?: string;
+
+    @IsString()
+    @IsOptional()
     userName?: string;
+
+    @IsString()
+    @IsOptional()
     gender?: string;
+
+    @IsString()
+    @IsOptional()
     bio?: string;
-    email?: string;
-    phoneNumber?: string;
 }
 
-export interface IEditEmail {
-    email: string;
+export class EditEmailDto {
+    @IsString()
+    @IsDefined()
+    @Matches(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        { message: 'Please enter a valid email' },
+    )
+    email!: string;
 }
 
-export interface IChangeEmail {
-    otp: string;
-    email: string;
+export class ChangeEmailDto {
+    @IsString()
+    @IsDefined()
+    otp!: string;
+
+    @IsString()
+    @IsDefined()
+    @Matches(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        { message: 'Please enter a valid email' },
+    )
+    email!: string;
 }
 
-export interface ICreatePost {
-    caption: string;
+export class CreatePostDto {
+    @IsString()
+    @IsDefined()
+    caption!: string;
 }
 
-export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>;
+export class GetAccessTokenDto {
+    @IsString()
+    @IsDefined()
+    refreshToken!: string;
+}
+
+// export type IUserRegisterInput = TypeOf<typeof UserRegisterInputSchema>;

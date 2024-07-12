@@ -1,13 +1,13 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
-interface PostDoc extends Document {
+export interface PostDoc extends Document {
     userId: string;
     caption: string;
     imageUrl: string;
     videoUrl: string;
 }
 
-const PostSchema: Schema = new mongoose.Schema<PostDoc>(
+const PostSchema = new Schema<PostDoc>(
     {
         userId: [
             {

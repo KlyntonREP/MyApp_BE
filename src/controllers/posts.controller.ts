@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ICreatePost } from '../dto';
+import { CreatePostDto } from '../dto';
 import { createPostService, homepageService } from '../services/index';
 import log from '../utility/logger';
 
@@ -11,8 +11,8 @@ import log from '../utility/logger';
  */
 export const createpostController = async (req: Request, res: Response) => {
     try {
-        const payload = req.body as ICreatePost;
-        const user: string = await req.loggedInUser.id;
+        const payload = req.body as CreatePostDto;
+        const user: string = await req.loggedInUser!._id;
         const file = req.files as { [fieldname: string]: Express.Multer.File[] };
         const response: any = await createPostService(payload, user, file);
         return res.status(response.status).json({
@@ -34,7 +34,7 @@ export const createpostController = async (req: Request, res: Response) => {
  */
 export const getHomePageController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.id;
+        const user: string = await req.loggedInUser!._id;
         const response: any = await homepageService(user);
         return res.status(response.status).json({
             status: response.status,

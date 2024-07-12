@@ -1,10 +1,12 @@
-export function HttpException(status: number, message: string, error: any = '') {
-    return {
-        status,
-        message,
-        error,
-        toString() {
-            return `${this.status} - ${this.message}`;
-        },
-    };
+export class HttpException extends Error {
+    public status: number;
+    public message: string;
+    public error: any;
+
+    constructor(message: string, status: number, error: any = '') {
+        super(message);
+        this.status = status;
+        this.message = message;
+        this.error = error;
+    }
 }

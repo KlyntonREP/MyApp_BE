@@ -1,7 +1,7 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import { StatusEnum } from '../common/enums';
 
-interface UserDoc extends Document {
+export interface UserDoc extends Document {
     email: string;
     firstName: string;
     lastName: string;
@@ -18,9 +18,11 @@ interface UserDoc extends Document {
     followers: string[];
     following: string[];
     posts: string[];
+    passwordResetToken?: string;
+    verifyEmailToken?: string;
 }
 
-const UserSchema: Schema = new mongoose.Schema<UserDoc>(
+const UserSchema = new Schema<UserDoc>(
     {
         firstName: {
             type: String,
@@ -89,6 +91,14 @@ const UserSchema: Schema = new mongoose.Schema<UserDoc>(
             default: [],
         },
         refreshToken: {
+            type: String,
+            required: false,
+        },
+        passwordResetToken: {
+            type: String,
+            required: false,
+        },
+        verifyEmailToken: {
             type: String,
             required: false,
         },

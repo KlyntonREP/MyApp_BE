@@ -1,4 +1,4 @@
-export * from './user.services';
-export * from './posts.services';
+export * from './user.service';
+export * from './posts.service';
 // export * from './social.services';
 // export * from './chats.services';

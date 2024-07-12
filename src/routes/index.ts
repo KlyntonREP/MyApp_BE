@@ -1,5 +1,5 @@
-import userRoutes from './user.route';
-import postRoutes from './posts.route';
-import socialRoutes from './social.route';
+import userRoutes from './user.routes';
+import postRoutes from './posts.routes';
+import socialRoutes from './social.routes';
 // import chatRoutes from './chat.route';
 export { userRoutes, postRoutes, socialRoutes };

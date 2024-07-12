@@ -14,8 +14,10 @@ import {
     getUserByIdService,
     editEmailService,
     changeEmailService,
+    getAccessTokenService,
+    signOutService,
 } from '../services/index';
-import { IChangeEmail, IEditProfile, IEditEmail } from '../dto';
+import { ChangeEmailDto, EditProfileDto, EditEmailDto, GetAccessTokenDto } from '../dto';
 import log from '../utility/logger';
 
 /**
@@ -64,7 +66,7 @@ export const resendCodeController = async (req: Request, res: Response) => {
  * @route /api/user/verify
  * @access public
  */
-export const verifyUserController = async (req: Request, res: Response) => {
+export const verifyEmailController = async (req: Request, res: Response) => {
     try {
         const response: any = await verifyEmailService(req.body);
         return res.status(response.status).json({
@@ -166,8 +168,8 @@ export const resetPassController = async (req: Request, res: Response) => {
  */
 export const updateProfilerController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.userId;
-        const payload = req.body as IEditProfile;
+        const user: string = await req.loggedInUser!._id;
+        const payload = req.body as EditProfileDto;
         const response: any = await updateProfileService(user, payload);
         return res.status(response.status).json({
             status: response.status,
@@ -188,8 +190,8 @@ export const updateProfilerController = async (req: Request, res: Response) => {
  */
 export const editEmailController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.userId;
-        const payload = req.body as IEditEmail;
+        const user: string = await req.loggedInUser!._id;
+        const payload = req.body as EditEmailDto;
         const response: any = await editEmailService(user, payload);
         return res.status(response.status).json({
             status: response.status,
@@ -210,8 +212,8 @@ export const editEmailController = async (req: Request, res: Response) => {
  */
 export const changeEmailController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.userId;
-        const payload = req.body as IChangeEmail;
+        const user: string = await req.loggedInUser!._id;
+        const payload = req.body as ChangeEmailDto;
         const response: any = await changeEmailService(user, payload);
         return res.status(response.status).json({
             status: response.status,
@@ -232,7 +234,7 @@ export const changeEmailController = async (req: Request, res: Response) => {
  */
 export const getProfileController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.userId;
+        const user: string = await req.loggedInUser!._id;
         const response: any = await getProfileService(user);
         return res.status(response.status).json({
             status: response.status,
@@ -272,7 +274,7 @@ export const getUserByIdController = async (req: Request, res: Response) => {
  */
 export const followController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.userId;
+        const user: string = await req.loggedInUser!._id;
         const { followId: followId } = req.params;
         const response: any = await followService(user, followId);
         return res.status(response.status).json({
@@ -294,16 +296,50 @@ export const followController = async (req: Request, res: Response) => {
 
 export const unfollowController = async (req: Request, res: Response) => {
     try {
-        const user: string = await req.loggedInUser.userId;
+        const user: string = await req.loggedInUser!._id;
         const { unfollowId: unfollowId } = req.params;
         const response: any = await unfollowService(user, unfollowId);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @description get new access token
+ * @method POST
+ * @route /api/user/get-accessToken
+ * @access public
+ */
+export const getAccessTokenController = async (req: Request, res: Response) => {
+    try {
+        const response = await getAccessTokenService((req.body as GetAccessTokenDto).refreshToken);
+        return res.status(response.status).json({
+            ...response,
+        });
+    } catch (error: any) {
+        // log.info(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @description logOut
+ * @method POST
+ * @route /api/user/logOut
+ * @access public
+ */
+export const signOutController = async (req: Request, res: Response) => {
+    try {
+        const response = await signOutService((req.body as GetAccessTokenDto).refreshToken);
+        return res.status(response.status).json({
+            ...response,
+        });
+    } catch (error: any) {
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
