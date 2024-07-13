@@ -15,8 +15,8 @@ export interface UserDoc extends Document {
     isPhoneVerified: boolean;
     status: string;
     refreshToken: string;
-    followers: string[];
-    following: string[];
+    followers: mongoose.Types.ObjectId;
+    following: mongoose.Types.ObjectId;
     posts: string[];
     passwordResetToken?: string;
     verifyEmailToken?: string;
@@ -78,14 +78,20 @@ const UserSchema = new Schema<UserDoc>(
             type: String,
             enum: StatusEnum,
         },
-        followers: {
-            type: [String],
-            default: [],
-        },
-        following: {
-            type: [String],
-            default: [],
-        },
+        followers: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User', // Reference to the User model
+                default: [],
+            },
+        ],
+        following: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+                default: [],
+            },
+        ],
         posts: {
             type: [String],
             default: [],

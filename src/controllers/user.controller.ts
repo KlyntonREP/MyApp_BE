@@ -16,6 +16,8 @@ import {
     changeEmailService,
     getAccessTokenService,
     signOutService,
+    searchService,
+    getAllUsersService,
 } from '../services/index';
 import { ChangeEmailDto, EditProfileDto, EditEmailDto, GetAccessTokenDto } from '../dto';
 import log from '../utility/logger';
@@ -30,9 +32,7 @@ export const createUserController = async (req: Request, res: Response) => {
     try {
         const response: any = await createUserService(req.body);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
         log.info(error);
@@ -50,12 +50,10 @@ export const resendCodeController = async (req: Request, res: Response) => {
     try {
         const response: any = await resendCodeService(req.body);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -70,12 +68,10 @@ export const verifyEmailController = async (req: Request, res: Response) => {
     try {
         const response: any = await verifyEmailService(req.body);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        console.log('OTP error =====', error);
+        // console.log('OTP error =====', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -90,12 +86,10 @@ export const UserLoginController = async (req: Request, res: Response) => {
     try {
         const response: any = await UserLoginService(req.body);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -110,12 +104,10 @@ export const forgotPassEmailController = async (req: Request, res: Response) => 
     try {
         const response: any = await forgotPassEmailService(req.body);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -130,12 +122,10 @@ export const forgotPassPhoneController = async (req: Request, res: Response) => 
     try {
         const response: any = await forgotPassPhoneService(req.body);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -150,12 +140,10 @@ export const resetPassController = async (req: Request, res: Response) => {
     try {
         const response: any = await resetPassService(req.body);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -172,12 +160,10 @@ export const updateProfilerController = async (req: Request, res: Response) => {
         const payload = req.body as EditProfileDto;
         const response: any = await updateProfileService(user, payload);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -194,12 +180,10 @@ export const editEmailController = async (req: Request, res: Response) => {
         const payload = req.body as EditEmailDto;
         const response: any = await editEmailService(user, payload);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -216,12 +200,10 @@ export const changeEmailController = async (req: Request, res: Response) => {
         const payload = req.body as ChangeEmailDto;
         const response: any = await changeEmailService(user, payload);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
-        log.info(error);
+        // log.info(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -237,9 +219,7 @@ export const getProfileController = async (req: Request, res: Response) => {
         const user: string = await req.loggedInUser!._id;
         const response: any = await getProfileService(user);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
@@ -257,9 +237,7 @@ export const getUserByIdController = async (req: Request, res: Response) => {
         const { userId: userId } = req.params;
         const response: any = await getUserByIdService(userId);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
@@ -278,9 +256,7 @@ export const followController = async (req: Request, res: Response) => {
         const { followId: followId } = req.params;
         const response: any = await followService(user, followId);
         return res.status(response.status).json({
-            status: response.status,
-            message: response.message,
-            data: response.data,
+            ...response,
         });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
@@ -335,6 +311,43 @@ export const getAccessTokenController = async (req: Request, res: Response) => {
 export const signOutController = async (req: Request, res: Response) => {
     try {
         const response = await signOutService((req.body as GetAccessTokenDto).refreshToken);
+        return res.status(response.status).json({
+            ...response,
+        });
+    } catch (error: any) {
+        // log.info(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @description search user
+ * @method GET
+ * @route /api/user/search
+ * @access public
+ */
+export const searchController = async (req: Request, res: Response) => {
+    try {
+        const query: any = req.query.searchTerm;
+        const response = await searchService(query);
+        return res.status(response.status).json({
+            ...response,
+        });
+    } catch (error: any) {
+        // log.info(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @description get all users
+ * @method GET
+ * @route /api/user/
+ * @access public
+ */
+export const getAllUsersController = async (req: Request, res: Response) => {
+    try {
+        const response = await getAllUsersService();
         return res.status(response.status).json({
             ...response,
         });

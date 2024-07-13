@@ -16,6 +16,8 @@ import {
     changeEmailController,
     getAccessTokenController,
     signOutController,
+    searchController,
+    getAllUsersController,
 } from '../controllers/index';
 import { Authenticate } from '../middlewares/auth.middleware';
 import { validate } from '../middlewares/validateResource';
@@ -51,5 +53,7 @@ router.get('/profile', Authenticate, getProfileController);
 router.get('/profile/:userId', Authenticate, getUserByIdController);
 router.post('/follow/:followId', Authenticate, followController);
 router.post('/unfollow/:unfollowId', Authenticate, unfollowController);
+router.get('/search', Authenticate, searchController);
+router.get('/', Authenticate, getAllUsersController);
 
 export default router;

@@ -378,14 +378,15 @@ export const followService = async (user: string, followId: string) => {
             return { status: 400, message: 'Already Following This User. Cannot Follow User Twice' };
         }
 
-        await UserModel.updateOne({ _id: user }, { $push: { following: followId } });
+        await UserModel.updateOne({ _id: user }, { $push: { following: followProfile } });
 
-        await UserModel.updateOne({ _id: followId }, { $push: { followers: user } });
+        await UserModel.updateOne({ _id: followId }, { $push: { followers: User } });
 
         // Fetch the updated user document without the password field
         const updatedUser = await UserModel.findById(user).select('-password').exec();
         return { status: 200, message: 'Followed User Successfuly', data: updatedUser };
     } catch (error) {
+        console.error('follow error========', error);
         return { status: 500, message: 'Internal Server Error', data: error };
     }
 };
@@ -407,9 +408,9 @@ export const unfollowService = async (user: string, unfollowId: string) => {
         }
 
         // Update the following and followers lists
-        await UserModel.updateOne({ _id: user }, { $pull: { following: unfollowId } });
+        await UserModel.updateOne({ _id: user }, { $pull: { following: unfollowProfile } });
 
-        await UserModel.updateOne({ _id: unfollowId }, { $pull: { followers: user } });
+        await UserModel.updateOne({ _id: unfollowId }, { $pull: { followers: User } });
 
         // Fetch the updated user document without the password field
         const updatedUser = await UserModel.findById(user).select('-password').exec();
@@ -458,6 +459,33 @@ export const signOutService = async (refreshToken: string) => {
         return { status: 200, message: 'Signed Out successfully' };
     } catch (error: any) {
         console.error('Error in signOutService:', error);
+        return { status: 500, message: 'Internal Server Error' };
+    }
+};
+
+export const searchService = async (query: string) => {
+    try {
+        const searchReGex = new RegExp(query, 'i');
+        const matchingResult = await UserModel.find({
+            $or: [{ userName: searchReGex }, { firstName: searchReGex }, { lastName: searchReGex }],
+        });
+        if (matchingResult) return { status: 200, message: 'User found', data: matchingResult };
+
+        return { status: 404, message: 'No user found' };
+    } catch (error: any) {
+        console.error('Error in search service:', error);
+        return { status: 500, message: 'Internal Server Error' };
+    }
+};
+
+export const getAllUsersService = async () => {
+    try {
+        const users = await UserModel.find();
+        if (users) return { status: 200, message: 'Users fetched successfully', data: users };
+
+        return { status: 404, message: 'No users found' };
+    } catch (error: any) {
+        console.error('Error in search service:', error);
         return { status: 500, message: 'Internal Server Error' };
     }
 };
